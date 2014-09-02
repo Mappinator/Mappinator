@@ -10,21 +10,18 @@ $bottom=$_GET['bottom'];
 <script lang="javascript">
 function Draw2(framenow,deep)
 {
-    if (deep>4) return;
     var link=[1];
 	var linksum=1;
     RecurDraw(framenow,linksum,link,deep);
 }
 function Draw1(framenow,deep)
 {
-    if (deep>4) return;
     var link=[2];
 	var linksum=1;
 	RecurDraw(framenow,linksum,link,deep);
 }
 function RecurDraw(frame,linksum,link,deep)
 {
-    if (deep>4) return;
     for (var i=0;i<linksum;i++)
 	{
 	    var framenow=document.createElement("div");
@@ -32,6 +29,7 @@ function RecurDraw(frame,linksum,link,deep)
 		frame.appendChild(framenow);
 		if (linknow!=undefined)
 		    framenow.style.cssText=linknow.style.cssText;
+		if (parseInt(framenow.offsetHeight)<=20) continue;
 		var url="GetFile.php?id="+link[i];
 		function GetFilereCall()
 		{
@@ -98,7 +96,6 @@ function onDraw()
     var body=document.getElementsByTagName("body")[0];
 	if (body!=undefined) body.innerHTML="";
     var url="Draw.php?left="+mapleft+"&right="+mapright+"&top="+maptop+"&bottom="+mapbottom;
-	
 	xmlHttpRequest=createXmlHttpRequest();
 	xmlHttpRequest.onreadystatechange=reCall;
 	xmlHttpRequest.open("POST",url,false);
