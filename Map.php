@@ -4,76 +4,17 @@ $right=$_GET['right'];
 $top=$_GET['top'];
 $bottom=$_GET['bottom'];
 ?>
-<!DOCTYPE HTML>
+
 <html>
 <head>
-<script lang="javascript">
-function Draw2(framenow,deep)
-{
-    var link=[1];
-	var linksum=1;
-    RecurDraw(framenow,linksum,link,deep);
-}
-function Draw1(framenow,deep)
-{
-    var link=[2];
-	var linksum=1;
-	RecurDraw(framenow,linksum,link,deep);
-}
-function RecurDraw(frame,linksum,link,deep)
-{
-    for (var i=0;i<linksum;i++)
-	{
-	    var framenow=document.createElement("div");
-		var linknow=document.getElementById("link"+link[i]);
-		frame.appendChild(framenow);
-		if (linknow!=undefined)
-		    framenow.style.cssText=linknow.style.cssText;
-		if (parseInt(framenow.offsetHeight)<=20) continue;
-		var url="GetFile.php?id="+link[i];
-		function GetFilereCall()
-		{
-		    if (xmlHttpRequest.response=="") return;
-    	    framenow.innerHTML=xmlHttpRequest.response;
-			eval("Draw"+link[i]+"(framenow,deep+1);");
-			delete(xmlHttpRequest);
-		}
-		var xmlHttpRequest=createXmlHttpRequest();
-		xmlHttpRequest.onreadystatechange=GetFilereCall;
-		xmlHttpRequest.open("POST",url,false);
-		xmlHttpRequest.send(null);
-	}
-}
-</script>
-<script lang="javascript">
+<link rel="stylesheet" href="Map.css" type="text/css"></link>
+<script language="javascript">
 var mapleft=parseInt("<?=$left?>");
 var mapright=parseInt("<?=$right?>");
 var maptop=parseInt("<?=$top?>");
 var mapbottom=parseInt("<?=$bottom?>");
-var mapfontSize=16;
-function Draw(id,left,right,top,bottom)
-{
-	var mapheight=window.innerHeight;
-	var mapwidth=window.innerWidth;
-	var drawleft=(mapwidth*(left-mapleft)/(mapright-mapleft));
-	var drawright=(mapwidth*(right-mapleft)/(mapright-mapleft));
-	var drawtop=(mapheight*(top-maptop)/(mapbottom-maptop));
-	var drawbottom=(mapheight*(bottom-maptop)/(mapbottom-maptop));
-	var StylefontSize=(16*(right-left)/(mapright-mapleft));
-	if (StylefontSize<12) StylefontSize=0;
-	var Styleleft=drawleft.toString()+"px";
-	var Styletop=drawtop.toString()+"px";
-	var Stylewidth=(drawright-drawleft).toString()+"px";
-	var Styleheight=(drawbottom-drawtop).toString()+"px";
-	id.style.left=Styleleft;
-	id.style.top=Styletop;
-	id.style.width=Stylewidth;
-	id.style.height=Styleheight;
-	id.style.position="absolute";
-	id.style.fontSize=StylefontSize+"pt";
-}
-</script>
-<script lang="javascript">
+var windowheight=window.innerHeight;
+var windowwidth=window.innerWidth;
 function createXmlHttpRequest()
 {
     if(window.ActiveXObject)
@@ -86,21 +27,70 @@ function createXmlHttpRequest()
 	}
 }
 var xmlHttpRequest;
+var HTML=new Array();
+function GetHTML(element)
+{
+    var id=element.id;
+    if (undefined==HTML[parseInt(id)])
+	{
+	    var url="GetFile.php?id="+id;
+		var xmlHttpRequest=createXmlHttpRequest();
+		xmlHttpRequest.onreadystatechange=function HTMLGet(){
+		    if (4!=xmlHttpRequest.readyState) return;
+		    HTML[parseInt(id)]=xmlHttpRequest.response;
+		    element.innerHTML=xmlHttpRequest.response;
+			for (var i=0;i<element.children.length;i++)
+			{
+	    	    var child=element.children[i];
+			    Map(child);
+	        }
+		};
+		xmlHttpRequest.open("POST",url,true);
+		xmlHttpRequest.send(null);
+	}
+	else 
+	{
+	    element.innerHTML=HTML[parseInt(id)];
+		for (var i=0;i<element.children.length;i++)
+		{
+	        var child=element.children[i];
+		    Map(child);
+	    }
+	}
+}
+function Map(element)
+{
+    var least=0.01;
+    if (element.offsetHeight/windowheight<least&&element.className=="link") return "";
+	if (element.offsetWidth/windowwidth<least&&element.className=="link") return "";
+	if (element.className=="link")
+	{
+		GetHTML(element);
+		return "";
+	}
+	for (var i=0;i<element.children.length;i++)
+	{
+	    var child=element.children[i];
+		Map(child);
+	}
+}
 function reCall()
 {
-    //alert(xmlHttpRequest.response);
-    eval(xmlHttpRequest.response);
+    if (4!=xmlHttpRequest.readyState) return;
+    document.body.innerHTML=xmlHttpRequest.response;
+	Map(document.body);
 }
-function onDraw()
+function Draw()
 {
-    var body=document.getElementsByTagName("body")[0];
-	if (body!=undefined) body.innerHTML="";
-    var url="Draw.php?left="+mapleft+"&right="+mapright+"&top="+maptop+"&bottom="+mapbottom;
+    document.body.style.fontSize=mapfontSize+"pt";
+    var url="GetMap.php?left="+mapleft+"&right="+mapright+"&top="+maptop+"&bottom="+mapbottom;
 	xmlHttpRequest=createXmlHttpRequest();
 	xmlHttpRequest.onreadystatechange=reCall;
 	xmlHttpRequest.open("POST",url,false);
 	xmlHttpRequest.send(null);
-}  
+}
+
+var mapfontSize=16;
 function mousePosition(event)
 {
 	return{X:event.pageX,Y:event.pageY};
@@ -137,7 +127,7 @@ function reDraw(mouse)
 	mapright=newright;
 	maptop=newtop;
 	mapbottom=newbottom;
-	onDraw();
+	Draw();
 }
 function mouseMove(event)
 {
@@ -170,18 +160,19 @@ function mouseWheel(event)
 		var newright=mapX+((mapright-mapX)*Radio);
 		var newtop=mapY+((maptop-mapY)*Radio);
 		var newbottom=mapY+((mapbottom-mapY)*Radio);
+		mapfontSize=mapfontSize/Radio;
 		mapleft=newleft;
 		mapright=newright;
 		maptop=newtop;
 		mapbottom=newbottom;
-		onDraw();
+		Draw();
 	}
 }
 </script>
 </head>
-<body onresize="onDraw()" style="overflow:hidden;font-size:16pt">
+<body onresize="Draw()" style="overflow:hidden;font-size:16pt">
 <script>
-onDraw();
+Draw();
 </script>
 </body>
 </html>
