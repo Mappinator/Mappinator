@@ -28,7 +28,7 @@ function createXmlHttpRequest()
 }
 var xmlHttpRequest;
 var HTML=new Array();
-function GetHTML(element)
+function GetHTML(element,fontsize)
 {
     var id=element.id;
     if (undefined==HTML[parseInt(id)])
@@ -39,11 +39,16 @@ function GetHTML(element)
 		    if (4!=xmlHttpRequest.readyState) return;
 		    HTML[parseInt(id)]=xmlHttpRequest.response;
 		    element.innerHTML=xmlHttpRequest.response;
+			var child=new Array();
 			for (var i=0;i<element.children.length;i++)
 			{
-	    	    var child=element.children[i];
-			    Map(child);
-	        }
+	    	    child[i]=element.children[i];
+			}
+			var childlength=element.children.length;
+			for (var i=0;i<childlength;i++)
+			{
+	            Map(child[i],fontsize*parseInt(child[i].style.fontSize)/100);
+			}
 		};
 		xmlHttpRequest.open("POST",url,true);
 		xmlHttpRequest.send(null);
@@ -51,34 +56,57 @@ function GetHTML(element)
 	else 
 	{
 	    element.innerHTML=HTML[parseInt(id)];
+		var child=new Array();
 		for (var i=0;i<element.children.length;i++)
 		{
-	        var child=element.children[i];
-		    Map(child);
+	        child[i]=element.children[i];
+		}
+	    var childlength=element.children.length;
+	    for (var i=0;i<childlength;i++)
+	    {
+	        Map(child[i],fontsize*parseInt(child[i].style.fontSize)/100);
 	    }
 	}
 }
-function Map(element)
+function Map(element,fontsize)
 {
     var least=0.01;
-    if (element.offsetHeight/windowheight<least&&element.className=="link") return "";
-	if (element.offsetWidth/windowwidth<least&&element.className=="link") return "";
+	if (fontsize<12&&0==element.children.length)
+	{
+	    element.style.fontSize="0pt";
+	}
+	if (element.offsetHeight/windowheight<least)
+	{ 
+	    element.parentNode.removeChild(element);
+	    return;
+	}
+	if (element.offsetWidth/windowwidth<least)
+	{ 
+	    element.parentNode.removeChild(element);
+	    return;
+	}
 	if (element.className=="link")
 	{
-		GetHTML(element);
-		return "";
+		GetHTML(element,fontsize);
+		return;
 	}
+	var child=new Array();
 	for (var i=0;i<element.children.length;i++)
 	{
-	    var child=element.children[i];
-		Map(child);
+	    child[i]=element.children[i];
+	}
+	var childlength=element.children.length;
+	for (var i=0;i<childlength;i++)
+	{
+	    Map(child[i],fontsize*parseInt(child[i].style.fontSize)/100);
 	}
 }
 function reCall()
 {
     if (4!=xmlHttpRequest.readyState) return;
     document.body.innerHTML=xmlHttpRequest.response;
-	Map(document.body);
+	document.body.style.fontSize=(windowheight/(mapbottom-maptop)*16)+"pt";
+	Map(document.body,mapfontSize);
 }
 function Draw()
 {

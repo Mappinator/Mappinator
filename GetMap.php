@@ -19,7 +19,7 @@ while ($row=mysql_fetch_array($result))
 	$height=$bottom-$top;
 	$width=$right-$left;
 	$id=$row['id'];
-	echo "<div id=\"".$id."\" class=\"link\" style=\"position:absolute;left:".(($mapleft-$left)/$width*100)."%".";top:".(($maptop-$top)/$height*100)."%".";height:".($mapheight/$height*100)."%".";width:".($mapwidth/$width*100)."%".";\"></div>";
+	echo "<div id=\"".$id."\" class=\"link\" style=\"font-size:100%;position:absolute;left:".(($mapleft-$left)/$width*100)."%".";top:".(($maptop-$top)/$height*100)."%".";height:".($mapheight/$height*100)."%".";width:".($mapwidth/$width*100)."%".";\"></div>";
 }
 
 ?>
