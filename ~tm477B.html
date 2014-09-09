@@ -41,12 +41,19 @@ function GetHTML(element,fontsize)
 		    if (4!=xmlHttpRequest.readyState) return;
 		    HTML[parseInt(id)]=xmlHttpRequest.response;
 			DOM[parseInt(id)]=(new DOMParser()).parseFromString(HTML[parseInt(id)],"text/xml");
-			//DOM[parseInt(id)]=document.createElement('div');
-			//DOM[parseInt(id)].innerHTML=xmlHttpRequest.response;
+			F[element]=DOM[parseInt(id)];
 		    element.innerHTML=xmlHttpRequest.response;
+			alert(element.children[0].iHTML);
+			alert(
+			var child=new Array();
 			for (var i=0;i<element.children.length;i++)
 			{
-			    Map(element.children[i],DOM[parseInt(id)].children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
+	    	    child[i]=element.children[i];
+			}
+			var childlength=element.children.length;
+			for (var i=0;i<childlength;i++)
+			{
+	            Map(child[i],F[element].children[i],fontsize*parseInt(child[i].style.fontSize)/100);
 			}
 		};
 		xmlHttpRequest.open("POST",url,true);
@@ -54,11 +61,18 @@ function GetHTML(element,fontsize)
 	}
 	else 
 	{
+	    F[element]=DOM[parseInt(id)];
 	    element.innerHTML=HTML[parseInt(id)];
+		var child=new Array();
 		for (var i=0;i<element.children.length;i++)
 		{
-			Map(element.children[i],DOM[parseInt(id)].children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
+	        child[i]=element.children[i];
 		}
+	    var childlength=element.children.length;
+	    for (var i=0;i<childlength;i++)
+	    {
+	        Map(child[i],F[element].children[i],fontsize*parseInt(child[i].style.fontSize)/100);
+	    }
 	}
 }
 function Map(element,Felement,fontsize)
@@ -83,27 +97,32 @@ function Map(element,Felement,fontsize)
 		GetHTML(element,fontsize);
 		return;
 	}
-	if (Felement!=null)
+	F[element]=Felement;
+	var child=new Array();
+	for (var i=0;i<element.children.length;i++)
 	{
-	    F[element]=Felement;
+	    child[i]=element.children[i];
 	}
+	var childlength=element.children.length;
 	if (element==document.body)
-	    for (var i=0;i<element.children.length;i++)
+	{
+	    for (var i=0;i<childlength;i++)
 		{
-			Map(element.children[i],null,fontsize*parseInt(element.children[i].style.fontSize)/100);
+	     	Map(child[i],null,fontsize*parseInt(child[i].style.fontSize)/100);
 		}
-		else
-		for (var i=0;i<element.children.length;i++)
-		{
-			Map(element.children[i],Felement.children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
-		}
+	}
+	else
+	for (var i=0;i<childlength;i++)
+	{
+	    Map(child[i],Felement.children[i],fontsize*parseInt(child[i].style.fontSize)/100);
+	}
 }
 function reCall()
 {
     if (4!=xmlHttpRequest.readyState) return;
     document.body.innerHTML=xmlHttpRequest.response;
 	document.body.style.fontSize=(windowheight/(mapbottom-maptop)*16)+"pt";
-	Map(document.body,null,mapfontSize);
+	Map(document.body,mapfontSize);
 }
 function Draw()
 {
@@ -195,8 +214,8 @@ function mouseWheel(event)
 }
 </script>
 </head>
-<body onresize="Draw()" style="overflow:hidden;font-size:16pt">
-<script>
+<body ccID="5622" onresize="Draw()" style="overflow:hidden;font-size:16pt">
+<script ccID="5687">
 Draw();
 </script>
 </body>
