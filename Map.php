@@ -40,11 +40,11 @@ function GetHTML(id,element,fontsize)
 		var xmlHttpRequest=createXmlHttpRequest();
 		xmlHttpRequest.onreadystatechange=function HTMLGet(){
 		    if (4!=xmlHttpRequest.readyState) return;
-		    HTML[mapid]=xmlHttpRequest.response;
 			DOM[mapid]=document.createElement('div');
 			DOM[mapid].innerHTML=xmlHttpRequest.response;
+			HTML[mapid]=DOM[mapid].innerHTML;
 			F[mapid]=DOM[mapid];
-		    element.innerHTML=xmlHttpRequest.response;
+		    element.innerHTML=DOM[mapid].innerHTML;
 			for (var i=0;i<element.children.length;i++)
 			{
 			    Map(id+i,element.children[i],DOM[mapid].children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
@@ -55,7 +55,7 @@ function GetHTML(id,element,fontsize)
 	}
 	else 
 	{
-	    element.innerHTML=HTML[mapid];
+	    element.innerHTML=DOM[mapid].innerHTML;
 		for (var i=0;i<element.children.length;i++)
 		{
 			Map(id+i,element.children[i],DOM[mapid].children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
@@ -195,6 +195,8 @@ function mouseWheel(event)
 		Draw();
 	}
 }
+</script>
+<script>
 </script>
 </head>
 <body onresize="Draw()" style="overflow:hidden;font-size:16pt">
