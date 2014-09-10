@@ -30,23 +30,24 @@ var xmlHttpRequest;
 var HTML=new Array();
 var DOM=new Array();
 var F=new Array();
-function GetHTML(element,fontsize)
+function GetHTML(id,element,fontsize)
 {
-    var id=element.id;
-    if (undefined==HTML[parseInt(id)])
+    var mapid=element.id;
+	id=id+"#"+mapid;
+    if (undefined==HTML[mapid])
 	{
-	    var url="GetFile.php?id="+id;
+	    var url="GetFile.php?id="+mapid;
 		var xmlHttpRequest=createXmlHttpRequest();
 		xmlHttpRequest.onreadystatechange=function HTMLGet(){
 		    if (4!=xmlHttpRequest.readyState) return;
-		    HTML[parseInt(id)]=xmlHttpRequest.response;
-			DOM[parseInt(id)]=(new DOMParser()).parseFromString(HTML[parseInt(id)],"text/xml");
-			//DOM[parseInt(id)]=document.createElement('div');
-			//DOM[parseInt(id)].innerHTML=xmlHttpRequest.response;
+		    HTML[mapid]=xmlHttpRequest.response;
+			DOM[mapid]=document.createElement('div');
+			DOM[mapid].innerHTML=xmlHttpRequest.response;
+			F[mapid]=DOM[mapid];
 		    element.innerHTML=xmlHttpRequest.response;
 			for (var i=0;i<element.children.length;i++)
 			{
-			    Map(element.children[i],DOM[parseInt(id)].children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
+			    Map(id+i,element.children[i],DOM[mapid].children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
 			}
 		};
 		xmlHttpRequest.open("POST",url,true);
@@ -54,19 +55,19 @@ function GetHTML(element,fontsize)
 	}
 	else 
 	{
-	    element.innerHTML=HTML[parseInt(id)];
+	    element.innerHTML=HTML[mapid];
 		for (var i=0;i<element.children.length;i++)
 		{
-			Map(element.children[i],DOM[parseInt(id)].children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
+			Map(id+i,element.children[i],DOM[mapid].children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
 		}
 	}
 }
-function Map(element,Felement,fontsize)
+function Map(id,element,Felement,fontsize)
 {
     var least=0.1;
 	if (fontsize<12&&0==element.children.length)
 	{
-	    element.style.fontSize="0pt";
+	    element.style.visibility="hidden";
 	}
 	if (element.offsetHeight/windowheight<least)
 	{ 
@@ -80,22 +81,23 @@ function Map(element,Felement,fontsize)
 	}
 	if (element.className=="link")
 	{
-		GetHTML(element,fontsize);
+		GetHTML(id,element,fontsize);
 		return;
 	}
 	if (Felement!=null)
 	{
-	    F[element]=Felement;
+		element.id=id;
+		F[element.id]=Felement;
 	}
 	if (element==document.body)
 	    for (var i=0;i<element.children.length;i++)
 		{
-			Map(element.children[i],null,fontsize*parseInt(element.children[i].style.fontSize)/100);
+			Map("",element.children[i],null,fontsize*parseInt(element.children[i].style.fontSize)/100);
 		}
 		else
 		for (var i=0;i<element.children.length;i++)
 		{
-			Map(element.children[i],Felement.children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
+			Map(id+i,element.children[i],Felement.children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
 		}
 }
 function reCall()
@@ -103,7 +105,7 @@ function reCall()
     if (4!=xmlHttpRequest.readyState) return;
     document.body.innerHTML=xmlHttpRequest.response;
 	document.body.style.fontSize=(windowheight/(mapbottom-maptop)*16)+"pt";
-	Map(document.body,null,mapfontSize);
+	Map("",document.body,null,mapfontSize);
 }
 function Draw()
 {
