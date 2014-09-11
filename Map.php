@@ -33,7 +33,7 @@ var F=new Array();
 function GetHTML(id,element,fontsize)
 {
     var mapid=element.id;
-	id=id+"#"+mapid;
+	id=id+"#"+mapid+"_";
     if (undefined==HTML[mapid])
 	{
 	    var url="GetFile.php?id="+mapid;
@@ -47,7 +47,7 @@ function GetHTML(id,element,fontsize)
 		    element.innerHTML=DOM[mapid].innerHTML;
 			for (var i=0;i<element.children.length;i++)
 			{
-			    Map(id+i,element.children[i],DOM[mapid].children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
+			    Map(id+i+"_",element.children[i],DOM[mapid].children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
 			}
 		};
 		xmlHttpRequest.open("POST",url,true);
@@ -58,7 +58,7 @@ function GetHTML(id,element,fontsize)
 	    element.innerHTML=DOM[mapid].innerHTML;
 		for (var i=0;i<element.children.length;i++)
 		{
-			Map(id+i,element.children[i],DOM[mapid].children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
+			Map(id+i+"_",element.children[i],DOM[mapid].children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
 		}
 	}
 }
@@ -97,7 +97,7 @@ function Map(id,element,Felement,fontsize)
 		else
 		for (var i=0;i<element.children.length;i++)
 		{
-			Map(id+i,element.children[i],Felement.children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
+			Map(id+i+"_",element.children[i],Felement.children[i],fontsize*parseInt(element.children[i].style.fontSize)/100);
 		}
 }
 function reCall()
