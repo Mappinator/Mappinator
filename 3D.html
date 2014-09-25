@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+		<script src="js/three.js/build/three.js"></script>
+		<script type="text/javascript">
+		    var renderer;
+			function initRenderer()
+			{
+			    width=document.getElementById('map').clientWidth;
+				height=document.getElementById('map').clientHeight;
+				renderer=new THREE.WebGLRenderer({antialias:true,precision:"highp"});
+				renderer.setSize(width,height);
+				document.getElementById('map').appendChild(renderer.domElement);
+				renderer.setClearColor(0xFFFFFF,1.0);
+			}
+			
+			var camera;
+			function initCamera()
+			{
+			    camera=new THREE.PerspectiveCamera(45,width/height,1,5000);
+				camera.position.x=0;
+				camera.position.y=-200;
+				camera.position.z=100;
+				camera.up.x=0;
+				camera.up.y=1;
+				camera.up.z=0;
+				camera.lookAt({x:0,y:100,z:50});
+			}
+			
+			var scene;
+			function initScene()
+		    {
+			    scene=new THREE.Scene();
+			}
+			
+			var light;
+			function initLight()
+			{
+			    light=new THREE.DirectionalLight(0xffffff,1.0,0);
+				light.position.set(0,-150,200);
+				scene.add(light);
+			}
+			
+			var loader=new THREE.JSONLoader();
+			var wood=THREE.ImageUtils.loadTexture("wood.jpg");
+			var material=new THREE.MeshLambertMaterial({color:0xffffff, map:wood, perPixel:true});
+			var sphere;
+			function initObject()
+			{
+			    loader.load("Star.js",function(geometry){
+			        object=new THREE.Mesh(geometry,material);
+				    scene.add(object);
+					object.position.set(0,0,0);
+					object.receiveShadow=true;
+					object.castShadow=true;
+					var render=function()
+					{
+					    renderer.render(scene, camera);
+						requestAnimationFrame(render);
+					}
+					document.getElementById("button1").onclick=render;
+			    });
+			}
+			
+			function init()
+			{
+			    initRenderer();
+				initCamera();
+				initScene();
+				initLight();
+				initObject();
+				renderer.clear();
+			}
+		</script>
+		<style type="text/css">
+		    div#map{
+			    border: none;
+                cursor: move;
+                width: 1400px;
+                height: 700px;
+                background-color: #FFFFFF;
+			}
+		</style>
+	</head>	
+	<body onload='init();'>
+	    <div id="map"></div>
+		<div id="button">
+	        <button id="button1" style="position:absolute;top:750px;width:80px;height:45px;"></button>
+		</div>
+	</body>
+</html>
