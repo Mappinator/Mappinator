@@ -40,7 +40,7 @@ function GetHTML(id,element,fontsize)
 		var xmlHttpRequest=createXmlHttpRequest();
 		xmlHttpRequest.onreadystatechange=function HTMLGet(){
 		    if (4!=xmlHttpRequest.readyState) return;
-			DOM[mapid]=document.createElement('div');
+			DOM[mapid]=document.createElement("div");
 			DOM[mapid].innerHTML=xmlHttpRequest.response;
 			HTML[mapid]=DOM[mapid].innerHTML;
 			F[mapid]=DOM[mapid];
