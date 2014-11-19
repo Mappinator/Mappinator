@@ -38,6 +38,39 @@
 				context:Object,
 				outputstate:"sleeping",
 				mode:"draw",
+				crossdot:function(line1,line2)
+				{
+				    var LineA1,LineB1,LineC1;
+					LineA1=line1.B.y-line1.A.y;
+					LineB1=-(line1.B.x-line1.A.x);
+					LineC1=line1.A.y*(line1.B.x-line1.A.x)-line1.A.x*(line1.B.y-line1.A.y);
+					
+					var LineA2,LineB2,LineC2;
+					LineA2=line2.B.y-line2.A.y;
+				    LineB2=-(line2.B.x-line2.A.x);
+					LineC2=line2.A.y*(line2.B.x-line2.A.x)-line2.A.x*(line2.B.y-line2.A.y);
+					
+					if (Math.abs((LineA1*LineB2-LineB1*LineA2))<0.0001) return null;
+					
+					var Crossx,Crossy;
+					Crossy=-(LineA1*LineC2-LineA2*LineC1)/(LineA1*LineB2-LineB1*LineA2);
+					Crossx=(LineB1*LineC2-LineB2*LineC1)/(LineA1*LineB2-LineB1*LineA2);
+					
+					if (Crossx<Math.min(line1.A.x,line1.B.x)) return null;
+					if (Crossx>Math.max(line1.A.x,line1.B.x)) return null;
+					if (Crossx<Math.min(line2.A.x,line2.B.x)) return null;
+					if (Crossx>Math.max(line2.A.x,line2.B.x)) return null;
+					
+					if (Crossy<Math.min(line1.A.y,line1.B.y)) return null;
+					if (Crossy>Math.max(line1.A.y,line1.B.y)) return null;
+					if (Crossy<Math.min(line2.A.y,line2.B.y)) return null;
+					if (Crossy>Math.max(line2.A.y,line2.B.y)) return null;
+					
+					if (this.existdot(Crossx,Crossy)) return null;
+					var dotnew=this.createdot(Crossx,Crossy,0.5,"real","black");
+					return dotnew;
+					
+				},
 				//input from file
 				input:function(file){
 				    for (var index in file)
@@ -193,7 +226,22 @@
 									
 					linenew.A.lines.push(linenew);
 					linenew.B.lines.push(linenew);
-					return linenew
+				    
+					if (reality=="real")
+					for (var i=0;i<this.lines.length;i++)
+					{
+					    if (this.lines[i]==linenew) continue;
+						var dotnew=this.crossdot(this.lines[i],linenew);
+						if (dotnew==null) continue;
+						this.createline(dotnew,this.lines[i].A,width,reality,color);
+						this.createline(dotnew,this.lines[i].B,width,reality,color);
+						this.createline(dotnew,linenew.A,width,reality,color);
+						this.createline(dotnew,linenew.B,width,reality,color);
+					    linenew.visible="invisible";
+						this.lines[i].visible="invisible";
+						this.eraseinvisible();
+						return;
+					}
 				},
 				// redraw
 				draw:function(){
@@ -1646,6 +1694,7 @@
 					context.stroke();
 					
 				},
+				
 				//find the [line]'s label ( it is the Ith line ) ( failed -1 )
 				label:function(editor){
 				    for (var i=0;i<editor.lines.length;i++)
