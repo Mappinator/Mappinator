@@ -1,10 +1,5 @@
-
-<!DOCTYPE html>
-<html>
-	<head>
-	    <script lang="javascript" src="json.js"></script>
-		<script lang="javascript">
-		    function createXmlHttpRequest(){
+		    document.write("<script lang=\"javascript\" src=\"json.js\"></script>");
+			function createXmlHttpRequest(){
                 if(window.ActiveXObject)
 				{
 	     		    return new ActiveXObject("Microsoft.XMLHTTP");
@@ -15,6 +10,31 @@
 			    }
             }
             var xmlHttpRequest;
+			var statebar={
+			    type:"statusbar",
+				draw:function(editor)
+				{
+				    editor.context.beginPath();
+					editor.context.fillStyle="black";
+					editor.context.font="30px Arial";
+					editor.context.fillText(editor.mode,editor.width*5/6,editor.width*5/60);
+					
+					editor.context.font="20px Arial";
+					editor.context.fillText("unit "+Math.floor(editor.unitx*100)/100+" "+Math.floor(editor.unity*100)/100,editor.width*5/6,editor.width*5/120);
+					if (editor.mode=="modify")
+					{
+					    editor.context.font="20px Arial";
+					    editor.context.fillText("sqrt "+editor.scale,editor.width*5/6,editor.width*5/120*3);
+					}
+					if (editor.mode=="output")
+					{
+					    editor.context.font="20px Arial";
+					    editor.context.fillText(editor.outputstate,editor.width*5/6,editor.width*5/120*3);
+					}
+					editor.context.closePath();
+					editor.context.fill();
+				}
+			};
 			var editor={
 			    type:"editor",
 				left:0,
@@ -37,11 +57,14 @@
 				move:"not",
 				context:Object,
 				canvas:Object,
+				statusbar:statebar,
 				outputstate:"sleeping",
+				outputfilename:"",
 				mode:"draw",
 				//find crossover [dot]
 				init:function(parent)
 				{
+				    this.statusbar=Object.create(statebar);
 				    this.canvas=document.createElement("canvas");
 					parent.appendChild(this.canvas);
 					this.canvas.className="mapeditor";
@@ -224,6 +247,7 @@
 		            var xmlHttpRequest=createXmlHttpRequest();
 		            xmlHttpRequest.onreadystatechange=function outputed(){
 					    if (xmlHttpRequest.readystate<4) return;
+						alert(xmlHttpRequest.responseText);
 					    if (xmlHttpRequest.responseText=="successful")
 						{
 						    editor.outputstate="successful";
@@ -316,25 +340,7 @@
 					    this.dots[i].draw(this);
 					}
 					
-					this.context.beginPath();
-					this.context.fillStyle="black";
-					this.context.font="30px Arial";
-					this.context.fillText(this.mode,this.width*5/6,this.width*5/60);
-					
-					this.context.font="20px Arial";
-					this.context.fillText("unit "+Math.floor(this.unitx*100)/100+" "+Math.floor(this.unity*100)/100,this.width*5/6,this.width*5/120);
-					if (this.mode=="modify")
-					{
-					    this.context.font="20px Arial";
-					    this.context.fillText("sqrt "+this.scale,this.width*5/6,this.width*5/120*3);
-					}
-					if (this.mode=="output")
-					{
-					    this.context.font="20px Arial";
-					    this.context.fillText(this.outputstate,this.width*5/6,this.width*5/120*3);
-					}
-					this.context.closePath();
-					this.context.fill();
+					this.statusbar.draw(this);
 				},
 				// erase invisible [dot] & [line]
 				eraseinvisible:function(){
@@ -1011,8 +1017,11 @@
 					if (keychar=="o"||keychar=="O")
 					{
 					    // save cp file
+						document.getElementsByClassName("cp")[0].value=this.toJSON().toJSONString();
+						outputfilename=prompt("enter filename");
+						if (null==outputfilename) return;
 					    var url="FoldOutput.php";
-						var data="CP="+this.toJSON().toJSONString();
+						var data="CP="+this.toJSON().toJSONString()+"&FileName="+outputfilename;
 						this.outputstate="outputting";
 		                this.save(url,data,this);
 						
@@ -1904,14 +1913,3 @@
 					}
 				}
 			};		
-		</script>
-	</head>
-	<body style="overflow:hidden;">
-		<script lang="javascript">
-			
-		    var mapeditor=Object.create(editor);
-			mapeditor.init(document.body);
-		</script>
-	</body>
-	<span style="font-family:arial;">Copyright &copy 2014 Mappinator All rights reserved.</span> 
-</html>

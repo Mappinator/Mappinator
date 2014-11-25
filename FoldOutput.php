@@ -1,6 +1,8 @@
 <?php
+     error_reporting(E_ALL^E_NOTICE);
      $CP=$_POST["CP"];
-     $File=fopen("Fold.cp","w");
+	 $FileName=$_POST["FileName"];
+     $File=fopen($FileName.".cp","w");
      fwrite($File,$CP);
      fclose($File);
 	 echo "successful";

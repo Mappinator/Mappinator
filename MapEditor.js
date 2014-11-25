@@ -1,10 +1,5 @@
-
-<!DOCTYPE html>
-<html>
-	<head>
-	    <script lang="javascript" src="json.js"></script>
-		<script lang="javascript">
-		    function createXmlHttpRequest(){
+		    document.write("<script lang=\"javascript\" src=\"json.js\"></script>");
+			function createXmlHttpRequest(){
                 if(window.ActiveXObject)
 				{
 	     		    return new ActiveXObject("Microsoft.XMLHTTP");
@@ -15,6 +10,34 @@
 			    }
             }
             var xmlHttpRequest;
+			var statebar={
+			    type:"statusbar",
+				draw:function(editor)
+				{
+				    editor.context.beginPath();
+					editor.context.fillStyle="black";
+					editor.context.font="30px Arial";
+					editor.context.fillText(editor.mode,editor.width*5/6,editor.width*5/120*3);
+					
+					editor.context.font="20px Arial";
+					editor.context.fillText("angle "+Math.floor(editor.alpha/Math.PI*180)+" deg",editor.width*5/6,editor.width*5/120);
+					
+					editor.context.font="20px Arial";
+					editor.context.fillText("unit "+Math.floor(editor.unitx*100)/100+" "+Math.floor(editor.unity*100)/100,editor.width*5/6,editor.width*5/120*2);
+					if (editor.mode=="modify")
+					{
+					    editor.context.font="20px Arial";
+					    editor.context.fillText("sqrt "+editor.scale,editor.width*5/6,editor.width*5/120*4);
+					}
+					if (editor.mode=="output")
+					{
+					    editor.context.font="20px Arial";
+					    editor.context.fillText(editor.outputstate,editor.width*5/6,editor.width*5/120*4);
+					}
+					editor.context.closePath();
+					editor.context.fill();
+				}
+			};
 			var editor={
 			    type:"editor",
 				left:0,
@@ -26,6 +49,7 @@
 				unitx:10,
 				unity:10,
 				scale:0,
+				alpha:0,
 				x:-1,
 				y:-1,
 				lastx:-1,
@@ -37,11 +61,14 @@
 				move:"not",
 				context:Object,
 				canvas:Object,
+				statusbar:statebar,
 				outputstate:"sleeping",
+				outputfilename:"",
 				mode:"draw",
 				//find crossover [dot]
 				init:function(parent)
 				{
+				    this.statusbar=Object.create(statebar);
 				    this.canvas=document.createElement("canvas");
 					parent.appendChild(this.canvas);
 					this.canvas.className="mapeditor";
@@ -224,6 +251,7 @@
 		            var xmlHttpRequest=createXmlHttpRequest();
 		            xmlHttpRequest.onreadystatechange=function outputed(){
 					    if (xmlHttpRequest.readystate<4) return;
+						alert(xmlHttpRequest.responseText);
 					    if (xmlHttpRequest.responseText=="successful")
 						{
 						    editor.outputstate="successful";
@@ -316,25 +344,7 @@
 					    this.dots[i].draw(this);
 					}
 					
-					this.context.beginPath();
-					this.context.fillStyle="black";
-					this.context.font="30px Arial";
-					this.context.fillText(this.mode,this.width*5/6,this.width*5/60);
-					
-					this.context.font="20px Arial";
-					this.context.fillText("unit "+Math.floor(this.unitx*100)/100+" "+Math.floor(this.unity*100)/100,this.width*5/6,this.width*5/120);
-					if (this.mode=="modify")
-					{
-					    this.context.font="20px Arial";
-					    this.context.fillText("sqrt "+this.scale,this.width*5/6,this.width*5/120*3);
-					}
-					if (this.mode=="output")
-					{
-					    this.context.font="20px Arial";
-					    this.context.fillText(this.outputstate,this.width*5/6,this.width*5/120*3);
-					}
-					this.context.closePath();
-					this.context.fill();
+					this.statusbar.draw(this);
 				},
 				// erase invisible [dot] & [line]
 				eraseinvisible:function(){
@@ -413,6 +423,28 @@
 					    this.dots[i].x=this.dots[i].realx;
 						this.dots[i].y=this.dots[i].realy;
 					}
+					for (var i=0;i<this.lines.length;i++)
+					{
+					    if (this.lines[i].selected=="selected")
+						{
+						    this.lines[i].color="plum";
+						}
+						else
+						{
+					        if (this.lines[i].foldtype=="unfold")
+							{
+						        this.lines[i].color="black";
+							}
+							if (this.lines[i].foldtype=="mountain")
+							{
+							    this.lines[i].color="royalblue";
+							}
+							if (this.lines[i].foldtype=="valley")
+							{
+						        this.lines[i].color="crimson";
+							}
+						}
+					}
 				},
 				// erase lightskyblue (selected) [dot] & [line]
 				eraselightskyblue:function(){
@@ -485,133 +517,28 @@
 					
 					return Math.atan2(ABdy,ABdx)-Math.atan2(ACdy,ACdx);
 				},
-				// set vitual [dot] & [line] to real
-				vitualtoreal:function(){
-				    for (var i=0;i<this.dots.length;i++)
-					{
-					    if (this.dots[i].reality=="vitual")
-						{
-						    this.dots[i].reality="real";
-							this.dots[i].color="black";
-							for (var j=0;j<this.lines.length;j++)
-							{
-							    if (this.lines[j].reality=="vitual") continue;
-							    var dotA=this.lines[j].A;
-								var dotB=this.lines[j].B;
-								var LineA,LineB,LineC;
-					    		LineA=dotB.y-dotA.y;
-								LineB=-(dotB.x-dotA.x);
-								LineC=dotA.y*(dotB.x-dotA.x)-dotA.x*(dotB.y-dotA.y);
-								if (Math.abs(this.dots[i].x*LineA+this.dots[i].y*LineB+LineC)<0.0001)
-								{
-								    if (this.dots[i].x<Math.min(dotA.x,dotB.x)) continue;
-									if (this.dots[i].x>Math.max(dotA.x,dotB.x)) continue;
-									if (this.dots[i].y<Math.min(dotA.y,dotB.y)) continue;
-									if (this.dots[i].y>Math.max(dotA.y,dotB.y)) continue;
-									
-									
-									this.createline(this.dots[i],this.lines[j].A,1,"vitual","grey");
-									
-									
-									this.createline(this.dots[i],this.lines[j].B,1,"vitual","grey");
-									
-									this.lines[j].visible="invisible";
-									this.eraseinvisible(); 
-									 
-									j--;
-									
-								}
-							}
-							//this.vitualtoreal();
-						}
-					}
-					for (var i=0;i<this.lines.length;i++)
-					{
-					    if (this.lines[i].reality=="vitual")
-						{
-						    if (this.lines[i].color!="grey")
-							{
-							    if (this.lines[i].color=="orange")
-								{
-								    var dotA=this.lines[i].A;
-									var dotB=this.lines[i].B;
-									var deltax=Math.abs(dotA.x-dotB.x);
-									var deltay=Math.abs(dotA.y-dotB.y);
-									
-									if (deltax!=0) this.unitx=deltax;
-									if (deltay!=0) this.unity=deltay;
-									
-									dotA.invert(this);
-									dotB.invert(this);
-									continue;
-								}
-							}
-						    var dotA=this.lines[i].A;
-							var dotB=this.lines[i].B;
-							var LineA,LineB,LineC;
-					    	LineA=dotB.y-dotA.y;
-							LineB=-(dotB.x-dotA.x);
-							LineC=dotA.y*(dotB.x-dotA.x)-dotA.x*(dotB.y-dotA.y);
-						    
-							var dotset=new Array();
-							dotset.push(dotA);
-							dotset.push(dotB);
-							for (var j=0;j<this.dots.length;j++)
-							{
-							    if (this.dots[j]==dotA) continue;
-								if (this.dots[j]==dotB) continue;
-								
-								if (this.dots[j].x<Math.min(dotA.x,dotB.x)) continue;
-								if (this.dots[j].x>Math.max(dotA.x,dotB.x)) continue;
-								if (this.dots[j].y<Math.min(dotA.y,dotB.y)) continue;
-								if (this.dots[j].y>Math.max(dotA.y,dotB.y)) continue;
-								
-								var dotnow=this.dots[j];
-								if (Math.abs(dotnow.x*LineA+dotnow.y*LineB+LineC)<0.0001)
-								{
-								    dotset.push(dotnow);
-								}
-								
-							}
-							dotset.sort(this.dotcmp);
-							for (var j=0;j<dotset.length-1;j++)
-							{
-							    dotset[j].invert(this);
-								dotset[j+1].invert(this);
-							    if (this.existline(dotset[j],dotset[j+1])) continue;
-							
-								this.createline(dotset[j],dotset[j+1],1,"real","black");
-							}
-						}
-					}
-					this.draw();
-				},
-				// find near [dot] & [line] ( dot first )
+				// find near [dot] & [line]
 				near:function(){
-				    var dot=this.neardot();
-					if (dot!=null) return dot;
-					
-					if (this.mode=="draw") return null;
-					
-					var line=this.nearline();
-					if (line!=null) return line;
-					return null;
+				    var result=new Array();
+				    var dotresult=this.neardot();
+					for (var i=0;i<dotresult.length;i++)
+					    result.push(dotresult[i]);
+					var lineresult=this.nearline();
+					for (var i=0;i<lineresult.length;i++)
+					    result.push(lineresult[i]);
+					return result;
 				},
 				// find near [dot]
 				neardot:function(){
-				    for (var i=0;i<this.dots.length;i++)
-					{
-					    var times=2;
-					    if ((this.dots[i].x-this.x)*(this.dots[i].x-this.x)+(this.dots[i].y-this.y)*(this.dots[i].y-this.y)<times*times*this.dots[i].r*this.dots[i].r)
-						{
-						    if (this.dots[i].reality=="vitual") continue;
-						    return this.dots[i];
-						}
-					}
-					return null;
+				    var dotresult=new Array();
+				    var proper=this.properdot();
+					var dotproper=this.existdot(proper.x,proper.y);
+					if (dotproper!=null) dotresult.push(dotproper);
+					return dotresult;
 				},
 				// find near [line]
 				nearline:function(){
+				    var lineresult=new Array();
 				    for (var i=0;i<this.lines.length;i++)
 					{
 					    var dotA=this.lines[i].A;
@@ -629,17 +556,15 @@
 						var Dis=Math.abs(LineA*this.x+LineB*this.y+LineC)/Math.sqrt(LineA*LineA+LineB*LineB);
 						if (Dis<times*this.lines[i].width)
 						{
-						    if (this.lines[i].reality=="vitual") continue;
-						    return this.lines[i];
+						    lineresult.push(this.lines[i]);
 						}
 					}
-					return null;
+					return lineresult;
 				},
 				// find if there is a [dot]
 				existdot:function(mapx,mapy){
 				    for (var i=0;i<this.dots.length;i++)
 					{
-					    if (this.dots[i].reality!="real") continue;
 					    if (Math.abs(this.dots[i].x-mapx)<0.0001&&Math.abs(this.dots[i].y-mapy)<0.0001)
 						{
 						    return this.dots[i];
@@ -651,7 +576,6 @@
 				existline:function(dotA,dotB){
 				    for (var i=0;i<this.lines.length;i++)
 					{
-					    if (this.lines[i].reality!="real") continue;
 					    if (this.lines[i].A==dotA&&this.lines[i].B==dotB)
 						{
 						    return this.lines[i];
@@ -663,40 +587,8 @@
 					}
 					return null;
 				},
-				//[event] onmousemove
-				onmousemove:function(event){
-				    event=event||window.event;
-				
-				    this.revisible();
-					this.erasevitual();
-				    this.eraselightskyblue();
-				    this.backtoreal();
-				
-			        var x=event.offsetX;
-				    var y=event.offsetY;
-				
-				    var mapx=x/this.width*(this.right-this.left)+this.left;
-				    var mapy=y/this.height*(this.bottom-this.top)+this.top;
-				    this.x=mapx;
-				    this.y=mapy;
-				    // move
-				    if (this.move=="move")
-				    {
-				        var deltax=this.x-this.lastx;
-					    var deltay=this.y-this.lasty;
-					    this.left-=deltax;
-					    this.right-=deltax;
-					    this.top-=deltay;
-					    this.bottom-=deltay;
-				    }
-				    // find near
-				    var near=this.near();
-				    if (near!=null) 
-				    {  
-				        near.onmousemove(this);
-				    }
-					// find proper dot ( with unitx & unity )
-				    if (this.selected.length==0&&this.mode=="draw")
+				properdot:function()
+				{
 					{
 					    var nearx;
 						var neary;
@@ -917,9 +809,50 @@
 							}
 							
 						}	
-							
-					    if (this.existdot(nearx,neary)!=null) return;
-						this.createdot(nearx,neary,0.5,"vitual","grey");
+						var properdot={
+						    x:nearx,
+							y:neary
+						};
+						return properdot;
+					}
+				},
+				//[event] onmousemove
+				onmousemove:function(event){
+				    event=event||window.event;
+				
+				    this.revisible();
+					this.erasevitual();
+				    this.eraselightskyblue();
+				    this.backtoreal();
+				
+			        var x=event.offsetX;
+				    var y=event.offsetY;
+				
+				    var mapx=x/this.width*(this.right-this.left)+this.left;
+				    var mapy=y/this.height*(this.bottom-this.top)+this.top;
+				    this.x=mapx;
+				    this.y=mapy;
+				    // move
+				    if (this.move=="move")
+				    {
+				        var deltax=this.x-this.lastx;
+					    var deltay=this.y-this.lasty;
+					    this.left-=deltax;
+					    this.right-=deltax;
+					    this.top-=deltay;
+					    this.bottom-=deltay;
+				    }
+				    // find near
+				    var near=this.near();
+					for (var i=0;i<near.length;i++)
+						near[i].onmousemove(this);
+						
+					// find proper dot ( with unitx & unity )
+				    if (this.selected.length==0&&this.mode=="draw")
+					{
+					    var proper=this.properdot();
+					    if (this.existdot(proper.x,proper.y)!=null) return;
+						this.createdot(proper.x,proper.y,0.5,"vitual","grey");
 	
 						this.draw();
 						return;
@@ -943,12 +876,9 @@
 				    var mapy=y/this.height*(this.bottom-this.top)+this.top;
 				
 				    var near=this.near();
-				    if (near!=null) 
-				    {  
-				        near.onmousedown(this);
-				    }
+				    for (var i=0;i<near.length;i++)
+						near[i].onmousedown(this);
 				
-				    this.vitualtoreal();
 				    this.modifyreal();
 					this.draw();
 				},
@@ -1003,6 +933,10 @@
 				    event=event||window.event;
 				    var keynum=event.keyCode;
 				    var keychar=String.fromCharCode(keynum);
+					if (keychar=="a"||keychar=="A")
+					{
+					    this.mode="angle";
+					}
 					if (keychar=="i"||keychar=="I")
 					{
 					    this.mode="input";
@@ -1011,8 +945,10 @@
 					if (keychar=="o"||keychar=="O")
 					{
 					    // save cp file
+						outputfilename=prompt("enter filename");
+						if (null==outputfilename) return;
 					    var url="FoldOutput.php";
-						var data="CP="+this.toJSON().toJSONString();
+						var data="CP="+this.toJSON().toJSONString()+"&FileName="+outputfilename;
 						this.outputstate="outputting";
 		                this.save(url,data,this);
 						
@@ -1025,6 +961,7 @@
 						    this.dots[i].unfoldsum=0;
 							this.dots[i].lines.sort(this.linecmp);
 						}
+						/////
 						/*for (var i=0;i<this.dots.length;i++)
 						{
 						    for (var j=0;j<this.dots[i].lines.length;j++)
@@ -1042,6 +979,7 @@
 							    this.dots[i].lines[j].color="black";
 							}
 						}*/
+						/////
 						for (var i=0;i<this.lines.length;i++)
 						{
 						    if (this.lines[i].foldtype=="unfold")
@@ -1137,20 +1075,25 @@
 						{
 						    //this.orangetoblack();
 						    var convexnow=this.convexs[i];
+							
+							/////
 							/*for (var j=0;j<convexnow.lines.length;j++)
 							{
 							    convexnow.lines[j].color="orange";
 							}
 							this.draw();
 							alert("convex: "+i);*/
+							/////
 							
 							//find a center line
 							var centerline=convexnow.existcenterline(this);
 							if (centerline==null) continue;
 							
+							/////
 							/*centerline.color="orange";
 							this.draw();
 							alert("orange");*/
+							/////
 							
 							var linenow=centerline;
 							var linenext;
@@ -1186,9 +1129,11 @@
 								}
 								dotnow=dotnext;
 								linenow=linenext;
+								/////
 								/*linenow.color="orange";
 								this.draw();
 								alert("orange");*/
+								/////
 								if (linenext.A==dotnow)
 								{
 									dotnext=linenext.B;
@@ -1257,6 +1202,7 @@
 								}
 							}
 						}
+						/////
 						/*for (var i=0;i<this.convexs.length;i++)
 						{
 						    var convexnow=this.convexs[i];
@@ -1272,7 +1218,7 @@
 								linenow.color="black";
 							}
 						}*/
-						
+						/////
 						//output cp file 
 						url="FoldOutput.php";
 						data="CP="+this.toJSON().toJSONString();
@@ -1611,6 +1557,7 @@
 				},
 				//[event] onmousemove
 				onmousemove:function(editor){
+				    
 				    if (editor.mode=="erase")
 					{
 					    for (var i=0;i<this.lines.length;i++)
@@ -1639,7 +1586,7 @@
 						}
 					    
 					}
-					if (editor.selected.length==1&&editor.mode=="unit")
+					if (editor.selected.length==1&&(editor.mode=="unit"||editor.mode=="angle"))
 					{
 					    if (editor.selected[0].type=="dot")
 						{
@@ -1652,7 +1599,7 @@
 							}
 						}
 					}
-				    if ((this.selected=="not"&&editor.mode=="select")||((editor.mode=="draw"||editor.mode=="unit")&&this.selected=="not"))
+				    if ((editor.mode=="select")||(editor.mode=="draw"||editor.mode=="unit"||editor.mode=="angle"))
 					{
 				        this.color="lightskyblue";
 					}
@@ -1660,13 +1607,129 @@
 				},
 				//[event] onmousedown
 				onmousedown:function(editor){
+				    if (this.reality=="vitual")
+					{
+						this.reality="real";
+						this.color="black";
+						for (var j=0;j<editor.lines.length;j++)
+						{
+							if (editor.lines[j].reality=="vitual") continue;
+							var dotA=editor.lines[j].A;
+						    var dotB=editor.lines[j].B;
+							if (this==dotA) continue;
+							if (this==dotB) continue;
+							var LineA,LineB,LineC;
+					    	LineA=dotB.y-dotA.y;
+							LineB=-(dotB.x-dotA.x);
+							LineC=dotA.y*(dotB.x-dotA.x)-dotA.x*(dotB.y-dotA.y);
+							if (Math.abs(this.x*LineA+this.y*LineB+LineC)<0.0001)
+							{
+								    if (this.x<Math.min(dotA.x,dotB.x)) continue;
+									if (this.x>Math.max(dotA.x,dotB.x)) continue;
+									if (this.y<Math.min(dotA.y,dotB.y)) continue;
+									if (this.y>Math.max(dotA.y,dotB.y)) continue;
+									editor.createline(this,editor.lines[j].A,1,"real","black");
+									editor.createline(this,editor.lines[j].B,1,"real","black");
+									editor.lines[j].visible="invisible";
+									editor.eraseinvisible();  
+									j--;
+							}
+						}
+						return;
+					}
+					if (editor.selected.length==1&&editor.selected[0].type=="dot")
+					{
+					    if (this.reality=="real"&&editor.selected[0]!=this)
+						{
+						    if (editor.mode=="unit")
+							{
+							    var dotA=editor.selected[0];
+								var dotB=this;
+								var deltax=Math.abs(dotA.x-dotB.x);
+								var deltay=Math.abs(dotA.y-dotB.y);
+									
+								if (deltax!=0) editor.unitx=deltax;
+								if (deltay!=0) editor.unity=deltay;
+									
+								dotA.invert(editor);
+								dotB.invert(editor);
+								return;
+							}
+							if (editor.mode=="angle")
+							{
+							    var dotA=editor.selected[0];
+								var dotB=this;
+								var deltax=dotB.x-dotA.x;
+								var deltay=dotB.y-dotA.y;
+								editor.alpha=Math.atan2(deltay,deltax);
+								if (editor.alpha<0)
+								{
+								    editor.alpha+=Math.PI;
+								}	
+								dotA.invert(editor);
+								dotB.invert(editor);
+								return;
+							}
+						    var linenow=editor.existline(editor.selected[0],this);
+							if (linenow.reality=="vitual")
+							{
+								var dotA=linenow.A;
+								var dotB=linenow.B;
+								var LineA,LineB,LineC;
+					    		LineA=dotB.y-dotA.y;
+								LineB=-(dotB.x-dotA.x);
+								LineC=dotA.y*(dotB.x-dotA.x)-dotA.x*(dotB.y-dotA.y);
+						    
+								var dotset=new Array();
+								dotset.push(dotA);
+								dotset.push(dotB);
+								for (var j=0;j<editor.dots.length;j++)
+								{
+								    if (editor.dots[j]==dotA) continue;
+									if (editor.dots[j]==dotB) continue;
+							
+									if (editor.dots[j].x<Math.min(dotA.x,dotB.x)) continue;
+									if (editor.dots[j].x>Math.max(dotA.x,dotB.x)) continue;
+									if (editor.dots[j].y<Math.min(dotA.y,dotB.y)) continue;
+									if (editor.dots[j].y>Math.max(dotA.y,dotB.y)) continue;
+								
+									var dotnow=editor.dots[j];
+									if (Math.abs(dotnow.x*LineA+dotnow.y*LineB+LineC)<0.0001)
+									{
+									    dotset.push(dotnow);
+									}
+								
+					    		}
+								dotset.sort(editor.dotcmp);
+								for (var j=0;j<dotset.length-1;j++)
+								{
+								    dotset[j].invert(editor);
+									dotset[j+1].invert(editor);
+									var linenow=editor.existline(dotset[j],dotset[j+1]);
+					        		if (linenow!=null)
+							  		{
+							    	    if (linenow.reality=="vitual")
+										{
+								    	    linenow.visible="invisible";
+											editor.eraseinvisible();
+										}
+										else continue;
+									}
+									editor.createline(dotset[j],dotset[j+1],1,"real","black");
+								}
+							
+							}
+							return;
+						}
+					}
+					    
 				    if (editor.mode=="erase")
 					{
 					    editor.eraseinvisible();
 						editor.draw();
 						return;
 					}
-					if (editor.mode=="select"||((editor.mode=="draw"||editor.mode=="unit")&&editor.selected.length==0||(editor.selected.length==1&&editor.selected[0]==this)))
+					if (editor.mode=="select"||((editor.mode=="draw"||editor.mode=="unit"||editor.mode=="angle")&&editor.selected.length==0||(editor.selected.length==1&&editor.selected[0]==this)))
 					{
 				        if (this.selected=="not")
 						{
@@ -1725,18 +1788,6 @@
 				draw:function(editor){
 				    if (this.visible!="visible") return;
 				    var context=editor.context;
-					if (this.fold=="unfold")
-					{
-					    this.color="black";
-					}
-					if (this.fold=="mountain")
-					{
-					    this.color="royalblue";
-					}
-					if (this.fold=="valley")
-					{
-					    this.color="crimson";
-					}
 								
 				    context.strokeStyle=this.color;
 					context.lineWidth=this.width/(editor.right-editor.left)*editor.width;
@@ -1789,7 +1840,7 @@
 				onmousemove:function(editor){
 				    if (editor.mode=="modify"&&Math.abs(parseFloat(editor.scale))>0.0001)
 					{
-					    
+					    this.color="green";
 					    var scale=Math.sqrt(parseFloat(editor.scale));
 						var dotA=this.A;
 						var dotB=this.B;
@@ -1803,16 +1854,15 @@
 						{
 						    var dotnow=editor.dots[i];
 							if (dotnow.x<MaxX) continue;
-							dotnow.realx=dotnow.x;
 							dotnow.x+=deltaX;
 						}
 						for (var i=0;i<editor.dots.length;i++)
 						{
 						    var dotnow=editor.dots[i];
 							if (dotnow.y<MaxY) continue;
-							dotnow.realy=dotnow.y;
 							dotnow.y+=deltaY;
 						}
+						editor.draw();
 					    return;
 					}
 				    if (editor.mode=="erase")
@@ -1824,10 +1874,7 @@
 					}
 				    if (editor.mode=="select")
 					{
-				        if (this.selected=="not")
-						{
-					        this.color="lightskyblue";
-						}
+					    this.color="lightskyblue";
 					}
 					if (editor.mode=="fold")
 					{
@@ -1837,6 +1884,8 @@
 				},
 				//[event] onmousedown
 				onmousedown:function(editor){
+				    
+					
 				    if (editor.mode=="erase")
 					{
 					    editor.eraseinvisible();
@@ -1904,14 +1953,3 @@
 					}
 				}
 			};		
-		</script>
-	</head>
-	<body style="overflow:hidden;">
-		<script lang="javascript">
-			
-		    var mapeditor=Object.create(editor);
-			mapeditor.init(document.body);
-		</script>
-	</body>
-	<span style="font-family:arial;">Copyright &copy 2014 Mappinator All rights reserved.</span> 
-</html>
