@@ -17,22 +17,22 @@ var statebar =
         editor.context.beginPath();
         editor.context.fillStyle = "black";
         editor.context.font = "30px Arial";
-        editor.context.fillText(editor.mode, editor.width * 5 / 6, editor.width * 5 / 120 * 3);
+        editor.context.fillText(editor.mode, editor.width * 5  / 6, editor.width * 5  / 120 * 3);
         editor.context.font = "20px Arial";
-        editor.context.fillText("angle " + Math.floor(editor.alpha / Math.PI * 180 * 100) / 100 + " d", 
-        editor.width * 5 / 6, editor.width * 5 / 120);
+        editor.context.fillText("angle " + Math.floor(editor.alpha  / Math.PI * 180 * 100)  / 100 + " d", 
+        editor.width * 5  / 6, editor.width * 5  / 120);
         editor.context.font = "20px Arial";
-        editor.context.fillText("unit " + Math.floor(editor.unitx * 100) / 100 + " " + Math.floor(editor.unity * 100) / 100, 
-        editor.width * 5 / 6, editor.width * 5 / 120 * 2);
+        editor.context.fillText("unit " + Math.floor(editor.unitx * 100)  / 100 + " " + Math.floor(editor.unity * 100)  / 100, 
+        editor.width * 5  / 6, editor.width * 5  / 120 * 2);
         if (editor.mode == "modify") 
         {
             editor.context.font = "20px Arial";
-            editor.context.fillText("sqrt " + editor.scale, editor.width * 5 / 6, editor.width * 5 / 120 * 4);
+            editor.context.fillText("sqrt " + editor.scale, editor.width * 5  / 6, editor.width * 5  / 120 * 4);
         }
         if (editor.mode == "output") 
         {
             editor.context.font = "20px Arial";
-            editor.context.fillText(editor.outputstate, editor.width * 5 / 6, editor.width * 5 / 120 * 4);
+            editor.context.fillText(editor.outputstate, editor.width * 5  / 6, editor.width * 5  / 120 * 4);
         }
         editor.context.closePath();
         editor.context.fill();
@@ -62,8 +62,8 @@ var editor =
                 continue;
             }
             var Crossx, Crossy;
-            Crossy =- (LineA1 * LineC2 - LineA2 * LineC1) / (LineA1 * LineB2 - LineB1 * LineA2);
-            Crossx = (LineB1 * LineC2 - LineB2 * LineC1) / (LineA1 * LineB2 - LineB1 * LineA2);
+            Crossy =- (LineA1 * LineC2 - LineA2 * LineC1)  / (LineA1 * LineB2 - LineB1 * LineA2);
+            Crossx = (LineB1 * LineC2 - LineB2 * LineC1)  / (LineA1 * LineB2 - LineB1 * LineA2);
             if (Crossx < Math.min(linenow.A.x, linenow.B.x) - 0.0001) {
                 continue;
             }
@@ -92,44 +92,44 @@ var editor =
         this.canvas.className = "mapeditor";
         var mapeditor = this;
         this.context = this.canvas.getContext('2d');
-        this.canvas.onmousewheel = function (event)
+        this.canvas.onmousewheel = function (event) 
         {
             event.preventDefault();
             mapeditor.onmousewheel(event);
         };
-        this.canvas.onmousedown = function (event)
+        this.canvas.onmousedown = function (event) 
         {
             event.preventDefault();
             mapeditor.onmousedown(event);
         };
-        this.canvas.onmouseup = function (event)
+        this.canvas.onmouseup = function (event) 
         {
             event.preventDefault();
             mapeditor.move = "not";
         };
-        this.canvas.onmousemove = function (event)
+        this.canvas.onmousemove = function (event) 
         {
             event.preventDefault();
             mapeditor.onmousemove(event);
         };
-        parent.onkeypress = function (event)
+        parent.onkeypress = function (event) 
         {
             event.preventDefault();
             mapeditor.onkeypress(event);
         };
-        parent.ondragstart = function (event)
+        parent.ondragstart = function (event) 
         {
             event.preventDefault();
         };
-        parent.ondragover = function (event)
+        parent.ondragover = function (event) 
         {
             event.preventDefault();
         };
-        parent.ondragenter = function (event)
+        parent.ondragenter = function (event) 
         {
             event.preventDefault();
         };
-        parent.ondrop = function (event)
+        parent.ondrop = function (event) 
         {
             event.preventDefault();
             var file = event.dataTransfer.files[0];
@@ -165,8 +165,8 @@ var editor =
             return null;
         }
         var Crossx, Crossy;
-        Crossy =- (LineA1 * LineC2 - LineA2 * LineC1) / (LineA1 * LineB2 - LineB1 * LineA2);
-        Crossx = (LineB1 * LineC2 - LineB2 * LineC1) / (LineA1 * LineB2 - LineB1 * LineA2);
+        Crossy =- (LineA1 * LineC2 - LineA2 * LineC1)  / (LineA1 * LineB2 - LineB1 * LineA2);
+        Crossx = (LineB1 * LineC2 - LineB2 * LineC1)  / (LineA1 * LineB2 - LineB1 * LineA2);
         if (Crossx < Math.min(line1.A.x, line1.B.x) - 0.0001) {
             return null;
         }
@@ -198,11 +198,11 @@ var editor =
         return dotnew;
     },
     //input from file
-    input : function (file)
+    input : function (file) 
     {
         for (var index in file) 
         {
-            if (typeof (file[index]) == "function")
+            if (typeof (file[index]) == "function") 
             {
                 continue;
             }
@@ -227,7 +227,7 @@ var editor =
                     }
                     for (var index2 in file2) 
                     {
-                        if (typeof (file2[index2]) == "function")
+                        if (typeof (file2[index2]) == "function") 
                         {
                             continue;
                         }
@@ -279,7 +279,7 @@ var editor =
         }
     },
     // create a convex ( with dots )
-    createconvex : function (dotset)
+    createconvex : function (dotset) 
     {
         var convexnew = Object.create(convex);
         convexnew.dots = dotset;
@@ -305,10 +305,10 @@ var editor =
                     this.draw();
                 },*/
     // output cp file ( with convexs )
-    output : function (url, data, editor)
+    output : function (url, data, editor) 
     {
         var xmlHttpRequest = createXmlHttpRequest();
-        xmlHttpRequest.onreadystatechange = function outputed()
+        xmlHttpRequest.onreadystatechange = function outputed() 
         {
             if (xmlHttpRequest.readystate < 4) {
                 return;
@@ -327,10 +327,10 @@ var editor =
         xmlHttpRequest.send(data);
     },
     // save cp file ( without convexs )
-    save : function (url, data, editor)
+    save : function (url, data, editor) 
     {
         var xmlHttpRequest = createXmlHttpRequest();
-        xmlHttpRequest.onreadystatechange = function saved()
+        xmlHttpRequest.onreadystatechange = function saved() 
         {
             if (xmlHttpRequest.readystate < 4) {
                 return;
@@ -349,7 +349,7 @@ var editor =
         xmlHttpRequest.send(data);
     },
     // create a dot ( with x , y , r , reality & color )
-    createdot : function (x, y, r, reality, color)
+    createdot : function (x, y, r, reality, color) 
     {
         var dotnow = this.existdot(x, y);
         if (dotnow != null) 
@@ -360,19 +360,19 @@ var editor =
             dotnow.reality = reality;
             dotnow.color = color;
         }
-		if (dotnow == null)
-		{
+        if (dotnow == null) 
+        {
             dotnow = Object.create(dot);
-        	dotnow.x = x;
-        	dotnow.y = y;
-        	dotnow.realx = x;
-        	dotnow.realy = y;
-        	dotnow.r = r;
-        	dotnow.reality = reality;
-        	dotnow.color = color;
-        	dotnow.lines = new Array();
-        	this.dots.push(dotnow);
-		}
+            dotnow.x = x;
+            dotnow.y = y;
+            dotnow.realx = x;
+            dotnow.realy = y;
+            dotnow.r = r;
+            dotnow.reality = reality;
+            dotnow.color = color;
+            dotnow.lines = new Array();
+            this.dots.push(dotnow);
+        }
         if (reality == "vitualreal") {
             return dotnow;
         }
@@ -421,7 +421,7 @@ var editor =
         return dotnow;
     },
     // create a line ( with A[dot] , B[dot] , width , reality , color )
-    createline : function (A, B, width, reality, color)
+    createline : function (A, B, width, reality, color) 
     {
         if (A == B) {
             return null;
@@ -461,7 +461,7 @@ var editor =
         }
     },
     // redraw
-    draw : function ()
+    draw : function () 
     {
         this.context.clearRect(0, 0, mapeditor.width, mapeditor.height);
         for (var i = 0; i < this.lines.length; i++) {
@@ -473,7 +473,7 @@ var editor =
         this.statusbar.draw(this);
     },
     // erase invisible [dot] & [line]
-    eraseinvisible : function ()
+    eraseinvisible : function () 
     {
         for (var i = 0; i < this.dots.length; i++) 
         {
@@ -494,7 +494,7 @@ var editor =
         this.draw();
     },
     // set invisible [dot] & [line] to visible
-    revisible : function ()
+    revisible : function () 
     {
         for (var i = 0; i < this.dots.length; i++) {
             if (this.dots[i].visible == "invisible") {
@@ -508,7 +508,7 @@ var editor =
         }
     },
     // erase vitual [dot] & [line]
-    erasevitual : function ()
+    erasevitual : function () 
     {
         for (var i = 0; i < this.dots.length; i++) {
             if (this.dots[i].reality == "vitual") {
@@ -533,7 +533,7 @@ var editor =
         }
         this.draw();
     },
-    erasevitualreal : function ()
+    erasevitualreal : function () 
     {
         for (var i = 0; i < this.dots.length; i++) {
             if (this.dots[i].reality == "vitualreal") {
@@ -543,7 +543,7 @@ var editor =
         }
     },
     // back to real position
-    backtoreal : function ()
+    backtoreal : function () 
     {
         for (var i = 0; i < this.dots.length; i++) {
             this.dots[i].x = this.dots[i].realx;
@@ -569,7 +569,7 @@ var editor =
         }
     },
     // erase lightskyblue (selected) [dot] & [line]
-    eraselightskyblue : function ()
+    eraselightskyblue : function () 
     {
         for (var i = 0; i < this.dots.length; i++) 
         {
@@ -610,7 +610,7 @@ var editor =
         this.draw();
     },
     // cmp [dot]
-    dotcmp : function (dotA, dotB)
+    dotcmp : function (dotA, dotB) 
     {
         if (dotA.x > dotB.x) {
             return 1;
@@ -627,7 +627,7 @@ var editor =
         return - 1;
     },
     // cmp [line]
-    linecmp : function (lineA, lineB)
+    linecmp : function (lineA, lineB) 
     {
         var dotA, dotB, dotC;
         if (lineA.A == lineB.A) {
@@ -661,7 +661,7 @@ var editor =
         return Math.atan2(ABdy, ABdx) - Math.atan2(ACdy, ACdx);
     },
     // find near [dot] & [line]
-    near : function ()
+    near : function () 
     {
         var result = new Array();
         var dotresult = this.neardot();
@@ -675,7 +675,7 @@ var editor =
         return result;
     },
     // find near [dot]
-    neardot : function ()
+    neardot : function () 
     {
         var dotresult = new Array();
         var proper = this.properdot();
@@ -686,7 +686,7 @@ var editor =
         return dotresult;
     },
     // find near [line]
-    nearline : function ()
+    nearline : function () 
     {
         var lineresult = new Array();
         for (var i = 0; i < this.lines.length; i++) 
@@ -710,7 +710,7 @@ var editor =
             LineA = dotB.y - dotA.y;
             LineB =- (dotB.x - dotA.x);
             LineC = dotA.y * (dotB.x - dotA.x) - dotA.x * (dotB.y - dotA.y);
-            var Dis = Math.abs(LineA * this.x + LineB * this.y + LineC) / Math.sqrt(LineA * LineA + LineB * LineB);
+            var Dis = Math.abs(LineA * this.x + LineB * this.y + LineC)  / Math.sqrt(LineA * LineA + LineB * LineB);
             if (Dis < times * this.lines[i].width) {
                 lineresult.push(this.lines[i]);
             }
@@ -718,7 +718,7 @@ var editor =
         return lineresult;
     },
     // find if there is a [dot]
-    existdot : function (mapx, mapy)
+    existdot : function (mapx, mapy) 
     {
         for (var i = 0; i < this.dots.length; i++) 
         {
@@ -729,7 +729,7 @@ var editor =
         return null;
     },
     // find if there is a [line]
-    existline : function (dotA, dotB)
+    existline : function (dotA, dotB) 
     {
         for (var i = 0; i < this.lines.length; i++) 
         {
@@ -783,31 +783,31 @@ var editor =
             }
             if (-1 == LeftX &&- 1 == RightX) 
             {
-                if (this.x - Math.floor(this.x / unitx) * unitx < unitx / 2) {
-                    nearx = Math.floor(this.x / unitx) * unitx;
+                if (this.x - Math.floor(this.x  / unitx) * unitx < unitx  / 2) {
+                    nearx = Math.floor(this.x  / unitx) * unitx;
                 }
                 else {
-                    nearx = Math.floor(this.x / unitx + 1) * unitx;
+                    nearx = Math.floor(this.x  / unitx + 1) * unitx;
                 }
             }
             else 
             {
                 if (-1 == LeftX) 
                 {
-                    if (RightX - this.x - Math.floor((RightX - this.x) / unitx) * unitx < unitx / 2) {
-                        nearx = RightX - Math.floor((RightX - this.x) / unitx) * unitx;
+                    if (RightX - this.x - Math.floor((RightX - this.x)  / unitx) * unitx < unitx  / 2) {
+                        nearx = RightX - Math.floor((RightX - this.x)  / unitx) * unitx;
                     }
                     else {
-                        nearx = RightX - Math.floor((RightX - this.x) / unitx + 1) * unitx;
+                        nearx = RightX - Math.floor((RightX - this.x)  / unitx + 1) * unitx;
                     }
                 }
                 if (-1 == RightX) 
                 {
-                    if (this.x - LeftX - Math.floor((this.x - LeftX) / unitx) * unitx < unitx / 2) {
-                        nearx = LeftX + Math.floor((this.x - LeftX) / unitx) * unitx;
+                    if (this.x - LeftX - Math.floor((this.x - LeftX)  / unitx) * unitx < unitx  / 2) {
+                        nearx = LeftX + Math.floor((this.x - LeftX)  / unitx) * unitx;
                     }
                     else {
-                        nearx = LeftX + Math.floor((this.x - LeftX) / unitx + 1) * unitx;
+                        nearx = LeftX + Math.floor((this.x - LeftX)  / unitx + 1) * unitx;
                     }
                 }
                 if (-1 != LeftX &&- 1 != RightX) 
@@ -815,23 +815,23 @@ var editor =
                     if (RightX - LeftX > unitx) 
                     {
                         var nearleftx;
-                        if (this.x - LeftX - Math.floor((this.x - LeftX) / unitx) * unitx < unitx / 2) {
-                            nearleftx = LeftX + Math.floor((this.x - LeftX) / unitx) * unitx;
+                        if (this.x - LeftX - Math.floor((this.x - LeftX)  / unitx) * unitx < unitx  / 2) {
+                            nearleftx = LeftX + Math.floor((this.x - LeftX)  / unitx) * unitx;
                         }
                         else 
                         {
-                            nearxleft = LeftX + Math.floor((this.x - LeftX) / unitx + 1) * unitx;
+                            nearxleft = LeftX + Math.floor((this.x - LeftX)  / unitx + 1) * unitx;
                             if (nearleftx > RightX) {
                                 nearleftx = RightX;
                             }
                         }
                         var nearrightx;
-                        if (RightX - this.x - Math.floor((RightX - this.x) / unitx) * unitx < unitx / 2) {
-                            nearrightx = RightX - Math.floor((RightX - this.x) / unitx) * unitx;
+                        if (RightX - this.x - Math.floor((RightX - this.x)  / unitx) * unitx < unitx  / 2) {
+                            nearrightx = RightX - Math.floor((RightX - this.x)  / unitx) * unitx;
                         }
                         else 
                         {
-                            nearrightx = RightX - Math.floor((RightX - this.x) / unitx + 1) * unitx;
+                            nearrightx = RightX - Math.floor((RightX - this.x)  / unitx + 1) * unitx;
                             if (nearrightx < LeftX) {
                                 nearrightx = LeftX;
                             }
@@ -856,31 +856,31 @@ var editor =
             }
             if (-1 == TopY &&- 1 == BottomY) 
             {
-                if (this.y - Math.floor(this.y / unity) * unity < unity / 2) {
-                    neary = Math.floor(this.y / unity) * unity;
+                if (this.y - Math.floor(this.y  / unity) * unity < unity  / 2) {
+                    neary = Math.floor(this.y  / unity) * unity;
                 }
                 else {
-                    neary = Math.floor(this.y / unity + 1) * unity;
+                    neary = Math.floor(this.y  / unity + 1) * unity;
                 }
             }
             else 
             {
                 if (-1 == TopY) 
                 {
-                    if (BottomY - this.y - Math.floor((BottomY - this.y) / unity) * unity < unity / 2) {
-                        neary = BottomY - Math.floor((BottomY - this.y) / unity) * unity;
+                    if (BottomY - this.y - Math.floor((BottomY - this.y)  / unity) * unity < unity  / 2) {
+                        neary = BottomY - Math.floor((BottomY - this.y)  / unity) * unity;
                     }
                     else {
-                        neary = BottomY - Math.floor((BottomY - this.y) / unity + 1) * unity;
+                        neary = BottomY - Math.floor((BottomY - this.y)  / unity + 1) * unity;
                     }
                 }
                 if (-1 == BottomY) 
                 {
-                    if (this.y - TopY - Math.floor((this.y - TopY) / unity) * unity < unity / 2) {
-                        neary = TopY + Math.floor((this.y - TopY) / unity) * unity;
+                    if (this.y - TopY - Math.floor((this.y - TopY)  / unity) * unity < unity  / 2) {
+                        neary = TopY + Math.floor((this.y - TopY)  / unity) * unity;
                     }
                     else {
-                        neary = TopY + Math.floor((this.y - TopY) / unity + 1) * unity;
+                        neary = TopY + Math.floor((this.y - TopY)  / unity + 1) * unity;
                     }
                 }
                 if (-1 != TopY &&- 1 != BottomY) 
@@ -888,23 +888,23 @@ var editor =
                     if (BottomY - TopY > unity) 
                     {
                         var neartopy;
-                        if (this.y - TopY - Math.floor((this.y - TopY) / unity) * unity < unity / 2) {
-                            neartopy = TopY + Math.floor((this.y - TopY) / unity) * unity;
+                        if (this.y - TopY - Math.floor((this.y - TopY)  / unity) * unity < unity  / 2) {
+                            neartopy = TopY + Math.floor((this.y - TopY)  / unity) * unity;
                         }
                         else 
                         {
-                            neartopy = TopY + Math.floor((this.y - TopY) / unity + 1) * unity;
+                            neartopy = TopY + Math.floor((this.y - TopY)  / unity + 1) * unity;
                             if (neartopy > BottomY) {
                                 neartopy = BottomY;
                             }
                         }
                         var nearbottomy;
-                        if (BottomY - this.y - Math.floor((BottomY - this.y) / unity) * unity < unity / 2) {
-                            nearbottomy = BottomY - Math.floor((BottomY - this.y) / unity) * unity;
+                        if (BottomY - this.y - Math.floor((BottomY - this.y)  / unity) * unity < unity  / 2) {
+                            nearbottomy = BottomY - Math.floor((BottomY - this.y)  / unity) * unity;
                         }
                         else 
                         {
-                            nearbottomy = BottomY - Math.floor((BottomY - this.y) / unity + 1) * unity;
+                            nearbottomy = BottomY - Math.floor((BottomY - this.y)  / unity + 1) * unity;
                             if (nearbottomy < TopY) {
                                 nearbottomy = TopY;
                             }
@@ -934,7 +934,7 @@ var editor =
         }
     },
     //[event] onmousemove
-    onmousemove : function (event)
+    onmousemove : function (event) 
     {
         event = event || window.event;
         this.revisible();
@@ -943,8 +943,8 @@ var editor =
         this.backtoreal();
         var x = event.offsetX;
         var y = event.offsetY;
-        var mapx = x / this.width * (this.right - this.left) + this.left;
-        var mapy = y / this.height * (this.bottom - this.top) + this.top;
+        var mapx = x  / this.width * (this.right - this.left) + this.left;
+        var mapy = y  / this.height * (this.bottom - this.top) + this.top;
         this.x = mapx;
         this.y = mapy;
         // move
@@ -975,7 +975,7 @@ var editor =
         }
     },
     //[event] onmousedown
-    onmousedown : function (event)
+    onmousedown : function (event) 
     {
         event = event || window.event;
         if (event.button == 2) {
@@ -989,8 +989,8 @@ var editor =
         }
         var x = event.offsetX;
         var y = event.offsetY;
-        var mapx = x / this.width * (this.right - this.left) + this.left;
-        var mapy = y / this.height * (this.bottom - this.top) + this.top;
+        var mapx = x  / this.width * (this.right - this.left) + this.left;
+        var mapy = y  / this.height * (this.bottom - this.top) + this.top;
         var near = this.near();
         for (var i = 0; i < near.length; i++) {
             near[i].onmousedown(this);
@@ -1003,7 +1003,7 @@ var editor =
         this.draw();
     },
     // toJSON 
-    toJSON : function ()
+    toJSON : function () 
     {
         var S = new Object();
         for (var val in this) 
@@ -1028,7 +1028,7 @@ var editor =
         return S;
     },
     //[event] onmousewheel
-    onmousewheel : function (event)
+    onmousewheel : function (event) 
     {
         var angle;
         if (event.wheelDelta) {
@@ -1048,7 +1048,7 @@ var editor =
         this.draw();
     },
     //[event] onkeypress
-    onkeypress : function (event)
+    onkeypress : function (event) 
     {
         event = event || window.event;
         var keynum = event.keyCode;
@@ -1423,7 +1423,7 @@ var editor =
                 this.alpha += (Math.PI * 2);
             }
             if (keychar == "q" || keychar == "Q") {
-                this.alpha += (Math.PI / 2);
+                this.alpha += (Math.PI  / 2);
             }
         }
         this.erasevitual();
@@ -1441,7 +1441,7 @@ var editor =
 var convex = 
 {
     type : "convex", dots : Array(), lines : Array(), //find if there is a border [line]
-    existborderline : function (lineA)
+    existborderline : function (lineA) 
     {
         for (var i = 0; i < this.lines.length; i++) 
         {
@@ -1455,7 +1455,7 @@ var convex =
         return null;
     },
     //find if there is a [dot]
-    existdot : function (dotA)
+    existdot : function (dotA) 
     {
         for (var i = 0; i < this.dots.length; i++) {
             if (this.dots[i] == dotA) {
@@ -1465,7 +1465,7 @@ var convex =
         return null;
     },
     //find the [dot]'s label ( it is the Ith dot in the convex ) ( failed -1 )
-    dotlabel : function (dotA)
+    dotlabel : function (dotA) 
     {
         for (var i = 0; i < this.dots.length; i++) {
             if (this.dots[i] == dotA) {
@@ -1475,7 +1475,7 @@ var convex =
         return - 1;
     },
     //find if there is a center [line] ( in the convex )
-    existcenterline : function (editor)
+    existcenterline : function (editor) 
     {
         for (var i = 0; i < this.dots.length; i++) 
         {
@@ -1539,7 +1539,7 @@ var convex =
         }
     },
     //toJSON
-    toJSON : function (editor)
+    toJSON : function (editor) 
     {
         if (editor.type != "editor") {
             return null;
@@ -1567,7 +1567,7 @@ var convex =
         return S;
     },
     //find the [convex]'s label ( it is the Ith convex ) ( failed -1 )
-    label : function (editor)
+    label : function (editor) 
     {
         for (var i = 0; i < editor.convexs.length; i++) {
             if (editor.convexs[i] == this) {
@@ -1577,7 +1577,7 @@ var convex =
         return - 1;
     },
     //find if a [dot] is in the [convex]
-    dotin : function (dotA)
+    dotin : function (dotA) 
     {
         var AngleSum = 0;
         for (var i = 0; i < this.dots.length; i++) 
@@ -1588,7 +1588,7 @@ var convex =
             var deltay1 = dotB.y - dotA.y;
             var deltax2 = dotC.x - dotA.x;
             var deltay2 = dotC.y - dotA.y;
-            var CosA = (deltax1 * deltax2 + deltay1 * deltay2) / Math.sqrt(deltax1 * deltax1 + deltay1 * deltay1) / Math.sqrt(deltax2 * deltax2 + deltay2 * deltay2);
+            var CosA = (deltax1 * deltax2 + deltay1 * deltay2)  / Math.sqrt(deltax1 * deltax1 + deltay1 * deltay1)  / Math.sqrt(deltax2 * deltax2 + deltay2 * deltay2);
             var AngleA = Math.acos(CosA);
             if (deltax1 * deltay2 - deltax2 * deltay1 > 0) {
                 AngleSum += AngleA;
@@ -1608,7 +1608,7 @@ var dot =
 {
     realx :- 1, realy :- 1, x :- 1, y :- 1, r :- 1, reality : "real", color : "black", selected : "not", 
     erased : "not", type : "dot", visible : "visible", lines : Array(), unfoldsum :- 1, //draw
-    draw : function (editor)
+    draw : function (editor) 
     {
         if (this.visible != "visible") {
             return;
@@ -1616,15 +1616,15 @@ var dot =
         var context = editor.context;
         context.fillStyle = this.color;
         context.beginPath();
-        var screenx = (this.x - editor.left) / (editor.right - editor.left) * editor.width;
-        var screeny = (this.y - editor.top) / (editor.bottom - editor.top) * editor.height;
-        var screenr = this.r / (editor.right - editor.left) * editor.width;
+        var screenx = (this.x - editor.left)  / (editor.right - editor.left) * editor.width;
+        var screeny = (this.y - editor.top)  / (editor.bottom - editor.top) * editor.height;
+        var screenr = this.r  / (editor.right - editor.left) * editor.width;
         context.arc(screenx, screeny, screenr, 0, Math.PI * 2, true);
         context.closePath();
         context.fill();
     },
     //find the [line]'s label ( it is the Ith line from the [dot] ) ( failed -1 )
-    linelabel : function (lineA)
+    linelabel : function (lineA) 
     {
         for (var i = 0; i < this.lines.length; i++) {
             if (this.lines[i] == lineA) {
@@ -1634,7 +1634,7 @@ var dot =
         return - 1;
     },
     //find the [dot]'s label ( it is the Ith dot )
-    label : function (editor)
+    label : function (editor) 
     {
         for (var i = 0; i < editor.dots.length; i++) {
             if (editor.dots[i] == this) {
@@ -1644,7 +1644,7 @@ var dot =
         return - 1;
     },
     //toJSON
-    toJSON : function (editor)
+    toJSON : function (editor) 
     {
         if (editor.type != "editor") {
             return null;
@@ -1673,7 +1673,7 @@ var dot =
         return S;
     },
     //[event] onmousemove
-    onmousemove : function (editor)
+    onmousemove : function (editor) 
     {
         if (editor.mode == "erase") 
         {
@@ -1716,7 +1716,7 @@ var dot =
         editor.draw();
     },
     //[event] onmousedown
-    onmousedown : function (editor)
+    onmousedown : function (editor) 
     {
         if ((this.reality == "vitual" && editor.selected.length == 0) || this.reality == "vitualreal") 
         {
@@ -1849,7 +1849,7 @@ var dot =
         editor.draw();
     },
     //selecting a [dot]
-    selecting : function (editor)
+    selecting : function (editor) 
     {
         this.selected = "selected";
         this.color = "plum";
@@ -1861,7 +1861,7 @@ var dot =
         editor.selected.push(this);
     },
     //invert a [dot]
-    invert : function (editor)
+    invert : function (editor) 
     {
         this.selected = "not";
         this.color = "black";
@@ -1878,25 +1878,25 @@ var line =
     position : "center", width :- 1, convexA : convex, convexB : convex, A : dot, B : dot, color : "black", 
     foldtype : "unfold", reality : "real", selected : "not", erased : "not", visible : "visible", type : "line", 
     //draw
-    draw : function (editor)
+    draw : function (editor) 
     {
         if (this.visible != "visible") {
             return;
         }
         var context = editor.context;
         context.strokeStyle = this.color;
-        context.lineWidth = this.width / (editor.right - editor.left) * editor.width;
+        context.lineWidth = this.width  / (editor.right - editor.left) * editor.width;
         context.beginPath();
-        var screenAx = (this.A.x - editor.left) / (editor.right - editor.left) * editor.width;
-        var screenAy = (this.A.y - editor.top) / (editor.bottom - editor.top) * editor.height;
-        var screenBx = (this.B.x - editor.left) / (editor.right - editor.left) * editor.width;
-        var screenBy = (this.B.y - editor.top) / (editor.bottom - editor.top) * editor.height;
+        var screenAx = (this.A.x - editor.left)  / (editor.right - editor.left) * editor.width;
+        var screenAy = (this.A.y - editor.top)  / (editor.bottom - editor.top) * editor.height;
+        var screenBx = (this.B.x - editor.left)  / (editor.right - editor.left) * editor.width;
+        var screenBy = (this.B.y - editor.top)  / (editor.bottom - editor.top) * editor.height;
         context.moveTo(screenAx, screenAy);
         context.lineTo(screenBx, screenBy);
         context.stroke();
     },
     //find the [line]'s label ( it is the Ith line ) ( failed -1 )
-    label : function (editor)
+    label : function (editor) 
     {
         for (var i = 0; i < editor.lines.length; i++) {
             if (editor.lines[i] == this) {
@@ -1906,7 +1906,7 @@ var line =
         return - 1;
     },
     //toJSON
-    toJSON : function (editor)
+    toJSON : function (editor) 
     {
         if (editor.type != "editor") {
             return null;
@@ -1936,7 +1936,7 @@ var line =
         return S;
     },
     //[event] onmousemove
-    onmousemove : function (editor)
+    onmousemove : function (editor) 
     {
         if (editor.mode == "modify" && Math.abs(parseFloat(editor.scale)) > 0.0001) 
         {
@@ -1980,7 +1980,7 @@ var line =
         editor.draw();
     },
     //[event] onmousedown
-    onmousedown : function (editor)
+    onmousedown : function (editor) 
     {
         if (editor.mode == "erase") {
             editor.eraseinvisible();
@@ -2014,7 +2014,7 @@ var line =
         editor.draw();
     },
     //selecting a [line]
-    selecting : function (editor)
+    selecting : function (editor) 
     {
         this.selected = "selected";
         this.color = "plum";
@@ -2026,7 +2026,7 @@ var line =
         editor.selected.push(this);
     },
     //invert a [line]
-    invert : function (editor)
+    invert : function (editor) 
     {
         this.selected = "not";
         this.color = "black";
