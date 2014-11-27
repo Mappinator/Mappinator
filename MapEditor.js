@@ -89,12 +89,11 @@
 						Crossy=-(LineA1*LineC2-LineA2*LineC1)/(LineA1*LineB2-LineB1*LineA2);
 						Crossx=(LineB1*LineC2-LineB2*LineC1)/(LineA1*LineB2-LineB1*LineA2);
 					
-						
-						if (Crossx<Math.min(linenow.A.x,linenow.B.x)) continue;
-						if (Crossx>Math.max(linenow.A.x,linenow.B.x)) continue;
+						if (Crossx<Math.min(linenow.A.x,linenow.B.x)-0.0001) continue;
+						if (Crossx>Math.max(linenow.A.x,linenow.B.x)+0.0001) continue;
 					
-						if (Crossy<Math.min(linenow.A.y,linenow.B.y)) continue;
-						if (Crossy>Math.max(linenow.A.y,linenow.B.y)) continue;
+						if (Crossy<Math.min(linenow.A.y,linenow.B.y)-0.0001) continue;
+						if (Crossy>Math.max(linenow.A.y,linenow.B.y)+0.0001) continue;
 					    
 						if (this.existdot(Crossx,Crossy)) continue;
 						var dotnew=this.createdot(Crossx,Crossy,0.5,"vitualreal","yellow");
@@ -178,15 +177,15 @@
 					Crossy=-(LineA1*LineC2-LineA2*LineC1)/(LineA1*LineB2-LineB1*LineA2);
 					Crossx=(LineB1*LineC2-LineB2*LineC1)/(LineA1*LineB2-LineB1*LineA2);
 					
-					if (Crossx<Math.min(line1.A.x,line1.B.x)) return null;
-					if (Crossx>Math.max(line1.A.x,line1.B.x)) return null;
-					if (Crossx<Math.min(line2.A.x,line2.B.x)) return null;
-					if (Crossx>Math.max(line2.A.x,line2.B.x)) return null;
+					if (Crossx<Math.min(line1.A.x,line1.B.x)-0.0001) return null;
+					if (Crossx>Math.max(line1.A.x,line1.B.x)+0.0001) return null;
+					if (Crossx<Math.min(line2.A.x,line2.B.x)-0.0001) return null;
+					if (Crossx>Math.max(line2.A.x,line2.B.x)+0.0001) return null;
 					
-					if (Crossy<Math.min(line1.A.y,line1.B.y)) return null;
-					if (Crossy>Math.max(line1.A.y,line1.B.y)) return null;
-					if (Crossy<Math.min(line2.A.y,line2.B.y)) return null;
-					if (Crossy>Math.max(line2.A.y,line2.B.y)) return null;
+					if (Crossy<Math.min(line1.A.y,line1.B.y)-0.0001) return null;
+					if (Crossy>Math.max(line1.A.y,line1.B.y)+0.0001) return null;
+					if (Crossy<Math.min(line2.A.y,line2.B.y)-0.0001) return null;
+					if (Crossy>Math.max(line2.A.y,line2.B.y)+0.0001) return null;
 					
 					if (this.existdot(Crossx,Crossy)!=null) return null;
 					var dotnew=this.createdot(Crossx,Crossy,0.5,"real","black");
@@ -287,7 +286,6 @@
 		            var xmlHttpRequest=createXmlHttpRequest();
 		            xmlHttpRequest.onreadystatechange=function outputed(){
 					    if (xmlHttpRequest.readystate<4) return;
-						alert(xmlHttpRequest.responseText);
 					    if (xmlHttpRequest.responseText=="successful")
 						{
 						    editor.outputstate="successful";
@@ -306,7 +304,7 @@
 				// save cp file ( without convexs )
 				save:function(url,data,editor){
 		            var xmlHttpRequest=createXmlHttpRequest();
-		            xmlHttpRequest.onreadystatechange=function outputed(){
+		            xmlHttpRequest.onreadystatechange=function saved(){
 					    if (xmlHttpRequest.readystate<4) return;
 					    if (xmlHttpRequest.responseText=="successful")
 						{
@@ -326,27 +324,27 @@
 				// create a dot ( with x , y , r , reality & color )
 				createdot:function(x,y,r,reality,color){
 				    var dotnow=this.existdot(x,y);
-					if (dotnow!=null&&dotnow.reality!="real")
+					if (dotnow!=null)
 					{
+					    if (dotnow.reality=="real") return dotnow;
 					    dotnow.reality=reality;
 				    	dotnow.color=color;
+						return dotnow;
 					}
 					
-					if (dotnow==null)
-					{
-				        dotnow=Object.create(dot);
-				    	dotnow.x=x;
-				    	dotnow.y=y;
-						dotnow.realx=x;
-						dotnow.realy=y;
-				    	dotnow.r=r;
-				    	dotnow.reality=reality;
-						dotnow.color=color;
-						dotnow.lines=new Array();
-						this.dots.push(dotnow);
-					}
-					if (reality=="vitualreal") return;
-					if (reality=="vitual") return;
+				    dotnow=Object.create(dot);
+				    dotnow.x=x;
+				    dotnow.y=y;
+					dotnow.realx=x;
+					dotnow.realy=y;
+				    dotnow.r=r;
+				    dotnow.reality=reality;
+					dotnow.color=color;
+					dotnow.lines=new Array();
+					this.dots.push(dotnow);
+						
+					if (reality=="vitualreal") return dotnow;
+					if (reality=="vitual") return dotnow;
 					for (var j=0;j<this.lines.length;j++)
 					{
 						if (this.lines[j].reality=="vitual") continue;
@@ -361,10 +359,10 @@
 						LineC=dotA.y*(dotB.x-dotA.x)-dotA.x*(dotB.y-dotA.y);
 						if (Math.abs(dotnow.x*LineA+dotnow.y*LineB+LineC)<0.0001)
 						{
-							if (dotnow.x<Math.min(dotA.x,dotB.x)) continue;
-							if (dotnow.x>Math.max(dotA.x,dotB.x)) continue;
-							if (dotnow.y<Math.min(dotA.y,dotB.y)) continue;
-							if (dotnow.y>Math.max(dotA.y,dotB.y)) continue;
+							if (dotnow.x<Math.min(dotA.x,dotB.x)-0.0001) continue;
+							if (dotnow.x>Math.max(dotA.x,dotB.x)+0.0001) continue;
+							if (dotnow.y<Math.min(dotA.y,dotB.y)-0.0001) continue;
+							if (dotnow.y>Math.max(dotA.y,dotB.y)+0.0001) continue;
 							
 							this.createline(dotnow,linenow.A,1,"real","black");
 							this.createline(dotnow,linenow.B,1,"real","black");
@@ -382,7 +380,7 @@
 				    var linenow=this.existline(A,B);
 					if (linenow!=null)
 					{
-					    if (linenow.reality!="real") return linenow;
+					    if (linenow.reality=="real") return linenow;
 					    linenow.reality=reality;
 						linenow.color=color;
 						return linenow;
@@ -1319,7 +1317,7 @@
 						/////
 						//output cp file 
 						url="FoldOutput.php";
-						data="CP="+this.toJSON().toJSONString();
+						data="CP="+this.toJSON().toJSONString()+"&FileName="+outputfilename;
 						this.outputstate="outputting";
 						this.draw();
 		                this.output(url,data,this);
@@ -1410,6 +1408,29 @@
 						if (keychar=="y"||keychar=="Y")
 						{
 						    this.unity=Math.sqrt(this.unitx*this.unitx+this.unity*this.unity);
+						}
+					}
+					if (this.mode=="angle")
+					{
+					    if (keychar=="c"||keychar=="C")
+						{
+						    this.alpha=0;
+						}
+						if (keychar=="h"||keychar=="H")
+						{
+						    this.alpha/=2;
+						}
+						if (keychar=="t"||keychar=="T")
+						{
+						    this.alpha/=3;
+						}
+						if (keychar=="r"||keychar=="R")
+						{
+						    this.alpha+=(Math.PI*2);
+						}
+						if (keychar=="q"||keychar=="Q")
+						{
+						    this.alpha+=(Math.PI/2);
 						}
 					}
 					this.erasevitual();
@@ -1763,10 +1784,10 @@
 								    if (editor.dots[j]==dotA) continue;
 									if (editor.dots[j]==dotB) continue;
 							
-									if (editor.dots[j].x<Math.min(dotA.x,dotB.x)) continue;
-									if (editor.dots[j].x>Math.max(dotA.x,dotB.x)) continue;
-									if (editor.dots[j].y<Math.min(dotA.y,dotB.y)) continue;
-									if (editor.dots[j].y>Math.max(dotA.y,dotB.y)) continue;
+									if (editor.dots[j].x<Math.min(dotA.x,dotB.x)-0.0001) continue;
+									if (editor.dots[j].x>Math.max(dotA.x,dotB.x)+0.0001) continue;
+									if (editor.dots[j].y<Math.min(dotA.y,dotB.y)-0.0001) continue;
+									if (editor.dots[j].y>Math.max(dotA.y,dotB.y)+0.0001) continue;
 								
 									var dotnow=editor.dots[j];
 									if (Math.abs(dotnow.x*LineA+dotnow.y*LineB+LineC)<0.0001)
