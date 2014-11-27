@@ -359,18 +359,20 @@ var editor =
             }
             dotnow.reality = reality;
             dotnow.color = color;
-            return dotnow;
         }
-        dotnow = Object.create(dot);
-        dotnow.x = x;
-        dotnow.y = y;
-        dotnow.realx = x;
-        dotnow.realy = y;
-        dotnow.r = r;
-        dotnow.reality = reality;
-        dotnow.color = color;
-        dotnow.lines = new Array();
-        this.dots.push(dotnow);
+		if (dotnow == null)
+		{
+            dotnow = Object.create(dot);
+        	dotnow.x = x;
+        	dotnow.y = y;
+        	dotnow.realx = x;
+        	dotnow.realy = y;
+        	dotnow.r = r;
+        	dotnow.reality = reality;
+        	dotnow.color = color;
+        	dotnow.lines = new Array();
+        	this.dots.push(dotnow);
+		}
         if (reality == "vitualreal") {
             return dotnow;
         }
