@@ -20,7 +20,7 @@
 					editor.context.fillText(editor.mode,editor.width*5/6,editor.width*5/120*3);
 					
 					editor.context.font="20px Arial";
-					editor.context.fillText("angle "+Math.floor(editor.alpha/Math.PI*180)+" deg",editor.width*5/6,editor.width*5/120);
+					editor.context.fillText("angle "+Math.floor(editor.alpha/Math.PI*180*100)/100+" d",editor.width*5/6,editor.width*5/120);
 					
 					editor.context.font="20px Arial";
 					editor.context.fillText("unit "+Math.floor(editor.unitx*100)/100+" "+Math.floor(editor.unity*100)/100,editor.width*5/6,editor.width*5/120*2);
@@ -66,6 +66,42 @@
 				outputfilename:"",
 				mode:"draw",
 				//find crossover [dot]
+				angledot:function()
+				{
+				    var dotnow=this.selected[0];
+					
+					for (var i=0;i<this.lines.length;i++)
+					{
+					    var linenow=this.lines[i];
+				        var LineA1,LineB1,LineC1;
+						LineA1=-Math.sin(this.alpha);
+						LineB1=Math.cos(this.alpha);
+						LineC1=Math.sin(this.alpha)*dotnow.x-Math.cos(this.alpha)*dotnow.y;
+					
+						var LineA2,LineB2,LineC2;
+						LineA2=linenow.B.y-linenow.A.y;
+				    	LineB2=-(linenow.B.x-linenow.A.x);
+						LineC2=linenow.A.y*(linenow.B.x-linenow.A.x)-linenow.A.x*(linenow.B.y-linenow.A.y);
+					
+						if (Math.abs((LineA1*LineB2-LineB1*LineA2))<0.0001) continue;
+					
+						var Crossx,Crossy;
+						Crossy=-(LineA1*LineC2-LineA2*LineC1)/(LineA1*LineB2-LineB1*LineA2);
+						Crossx=(LineB1*LineC2-LineB2*LineC1)/(LineA1*LineB2-LineB1*LineA2);
+					
+						
+						if (Crossx<Math.min(linenow.A.x,linenow.B.x)) continue;
+						if (Crossx>Math.max(linenow.A.x,linenow.B.x)) continue;
+					
+						if (Crossy<Math.min(linenow.A.y,linenow.B.y)) continue;
+						if (Crossy>Math.max(linenow.A.y,linenow.B.y)) continue;
+					    
+						if (this.existdot(Crossx,Crossy)) continue;
+						var dotnew=this.createdot(Crossx,Crossy,0.5,"vitualreal","yellow");
+						i=-1;
+					}
+					this.draw();
+				},
 				init:function(parent)
 				{
 				    this.statusbar=Object.create(statebar);
@@ -152,7 +188,7 @@
 					if (Crossy<Math.min(line2.A.y,line2.B.y)) return null;
 					if (Crossy>Math.max(line2.A.y,line2.B.y)) return null;
 					
-					if (this.existdot(Crossx,Crossy)) return null;
+					if (this.existdot(Crossx,Crossy)!=null) return null;
 					var dotnew=this.createdot(Crossx,Crossy,0.5,"real","black");
 					return dotnew;
 					
@@ -289,20 +325,68 @@
 				},
 				// create a dot ( with x , y , r , reality & color )
 				createdot:function(x,y,r,reality,color){
-				    var dotnew=Object.create(dot);
-				    dotnew.x=x;
-				    dotnew.y=y;
-					dotnew.realx=x;
-					dotnew.realy=y;
-				    dotnew.r=r;
-				    dotnew.reality=reality;
-					dotnew.color=color;
-					dotnew.lines=new Array();
-					this.dots.push(dotnew);
-					return dotnew;
+				    var dotnow=this.existdot(x,y);
+					if (dotnow!=null&&dotnow.reality!="real")
+					{
+					    dotnow.reality=reality;
+				    	dotnow.color=color;
+					}
+					
+					if (dotnow==null)
+					{
+				        dotnow=Object.create(dot);
+				    	dotnow.x=x;
+				    	dotnow.y=y;
+						dotnow.realx=x;
+						dotnow.realy=y;
+				    	dotnow.r=r;
+				    	dotnow.reality=reality;
+						dotnow.color=color;
+						dotnow.lines=new Array();
+						this.dots.push(dotnow);
+					}
+					if (reality=="vitualreal") return;
+					if (reality=="vitual") return;
+					for (var j=0;j<this.lines.length;j++)
+					{
+						if (this.lines[j].reality=="vitual") continue;
+						var linenow=this.lines[j];
+						var dotA=this.lines[j].A;
+						var dotB=this.lines[j].B;
+						if (dotnow==dotA) continue;
+						if (dotnow==dotB) continue;
+						var LineA,LineB,LineC;
+					    LineA=dotB.y-dotA.y;
+						LineB=-(dotB.x-dotA.x);
+						LineC=dotA.y*(dotB.x-dotA.x)-dotA.x*(dotB.y-dotA.y);
+						if (Math.abs(dotnow.x*LineA+dotnow.y*LineB+LineC)<0.0001)
+						{
+							if (dotnow.x<Math.min(dotA.x,dotB.x)) continue;
+							if (dotnow.x>Math.max(dotA.x,dotB.x)) continue;
+							if (dotnow.y<Math.min(dotA.y,dotB.y)) continue;
+							if (dotnow.y>Math.max(dotA.y,dotB.y)) continue;
+							
+							this.createline(dotnow,linenow.A,1,"real","black");
+							this.createline(dotnow,linenow.B,1,"real","black");
+							linenow.visible="invisible";
+							this.eraseinvisible();  
+							j=-1;
+						}
+					}
+					
+					return dotnow;
 				},
 				// create a line ( with A[dot] , B[dot] , width , reality , color )
 				createline:function(A,B,width,reality,color){
+				    if (A==B) return null;
+				    var linenow=this.existline(A,B);
+					if (linenow!=null)
+					{
+					    if (linenow.reality!="real") return linenow;
+					    linenow.reality=reality;
+						linenow.color=color;
+						return linenow;
+					}
 				    var linenew=Object.create(line);
 					linenew.reality=reality;
 					linenew.color=color;
@@ -314,19 +398,12 @@
 					linenew.A.lines.push(linenew);
 					linenew.B.lines.push(linenew);
 				    
-					if (reality=="real")
+					if (reality!="real") return;
 					for (var i=0;i<this.lines.length;i++)
 					{
 					    if (this.lines[i]==linenew) continue;
 						var dotnew=this.crossdot(this.lines[i],linenew);
 						if (dotnew==null) continue;
-						this.createline(dotnew,this.lines[i].A,width,reality,color);
-						this.createline(dotnew,this.lines[i].B,width,reality,color);
-						this.createline(dotnew,linenew.A,width,reality,color);
-						this.createline(dotnew,linenew.B,width,reality,color);
-					    linenew.visible="invisible";
-						this.lines[i].visible="invisible";
-						this.eraseinvisible();
 						return;
 					}
 				},
@@ -416,6 +493,16 @@
 					}
 					this.draw();
 				},
+				erasevitualreal:function(){
+				    for (var i=0;i<this.dots.length;i++)
+					{
+					    if (this.dots[i].reality=="vitualreal")
+						{
+						    this.dots.splice(i,1);
+							i--;
+						}
+					}
+				},
 				// back to real position
 				backtoreal:function(){
 				    for (var i=0;i<this.dots.length;i++)
@@ -455,6 +542,10 @@
 					        if (this.dots[i].selected=="selected")
 							{
 							    this.dots[i].color="plum";
+							}
+							else if (this.dots[i].reality=="vitualreal")
+							{
+							    this.dots[i].color="yellow";
 							}
 							else
 							{
@@ -821,7 +912,7 @@
 				    event=event||window.event;
 				
 				    this.revisible();
-					this.erasevitual();
+					this.erasevitual();	
 				    this.eraselightskyblue();
 				    this.backtoreal();
 				
@@ -847,6 +938,7 @@
 					for (var i=0;i<near.length;i++)
 						near[i].onmousemove(this);
 						
+					
 					// find proper dot ( with unitx & unity )
 				    if (this.selected.length==0&&this.mode=="draw")
 					{
@@ -857,6 +949,7 @@
 						this.draw();
 						return;
 					}
+					
 				},
 				//[event] onmousedown
 				onmousedown:function(event){
@@ -874,11 +967,16 @@
 				    var y=event.offsetY;
 				    var mapx=x/this.width*(this.right-this.left)+this.left;
 				    var mapy=y/this.height*(this.bottom-this.top)+this.top;
-				
+				    
 				    var near=this.near();
 				    for (var i=0;i<near.length;i++)
 						near[i].onmousedown(this);
-				
+				    this.erasevitualreal();
+				    if (this.selected.length==1&&this.selected[0].type=="dot"&&this.mode=="draw")
+					{
+					    this.angledot();
+					}
+					
 				    this.modifyreal();
 					this.draw();
 				},
@@ -1557,7 +1655,7 @@
 				},
 				//[event] onmousemove
 				onmousemove:function(editor){
-				    
+				
 				    if (editor.mode=="erase")
 					{
 					    for (var i=0;i<this.lines.length;i++)
@@ -1578,10 +1676,7 @@
 							{
 							    var dotA=editor.selected[0];
 								var dotB=this;
-								if (editor.existline(dotA,dotB)==null)
-								{ 
-									editor.createline(dotA,dotB,1,"vitual","grey");
-								}   
+								editor.createline(dotA,dotB,1,"vitual","grey"); 
 							}
 						}
 					    
@@ -1599,7 +1694,7 @@
 							}
 						}
 					}
-				    if ((editor.mode=="select")||(editor.mode=="draw"||editor.mode=="unit"||editor.mode=="angle"))
+				    if (editor.mode=="select"||editor.mode=="draw"||editor.mode=="unit"||editor.mode=="angle")
 					{
 				        this.color="lightskyblue";
 					}
@@ -1607,39 +1702,18 @@
 				},
 				//[event] onmousedown
 				onmousedown:function(editor){
-				    if (this.reality=="vitual")
+				    if ((this.reality=="vitual"&&editor.selected.length==0)||this.reality=="vitualreal")
 					{
-						this.reality="real";
-						this.color="black";
-						for (var j=0;j<editor.lines.length;j++)
-						{
-							if (editor.lines[j].reality=="vitual") continue;
-							var dotA=editor.lines[j].A;
-						    var dotB=editor.lines[j].B;
-							if (this==dotA) continue;
-							if (this==dotB) continue;
-							var LineA,LineB,LineC;
-					    	LineA=dotB.y-dotA.y;
-							LineB=-(dotB.x-dotA.x);
-							LineC=dotA.y*(dotB.x-dotA.x)-dotA.x*(dotB.y-dotA.y);
-							if (Math.abs(this.x*LineA+this.y*LineB+LineC)<0.0001)
-							{
-								    if (this.x<Math.min(dotA.x,dotB.x)) continue;
-									if (this.x>Math.max(dotA.x,dotB.x)) continue;
-									if (this.y<Math.min(dotA.y,dotB.y)) continue;
-									if (this.y>Math.max(dotA.y,dotB.y)) continue;
-									editor.createline(this,editor.lines[j].A,1,"real","black");
-									editor.createline(this,editor.lines[j].B,1,"real","black");
-									editor.lines[j].visible="invisible";
-									editor.eraseinvisible();  
-									j--;
-							}
-						}
-						return;
+					    var label;
+						if (this.reality=="vitual") label=true;
+						    else label=false;
+						editor.createdot(this.x,this.y,0.5,"real","black");
+						if (label==true) return;
 					}
+		
 					if (editor.selected.length==1&&editor.selected[0].type=="dot")
 					{
-					    if (this.reality=="real"&&editor.selected[0]!=this)
+					    if (editor.selected[0]!=this)
 						{
 						    if (editor.mode=="unit")
 							{
@@ -1671,6 +1745,7 @@
 								return;
 							}
 						    var linenow=editor.existline(editor.selected[0],this);
+							if (linenow==null) return;
 							if (linenow.reality=="vitual")
 							{
 								var dotA=linenow.A;
@@ -1696,6 +1771,10 @@
 									var dotnow=editor.dots[j];
 									if (Math.abs(dotnow.x*LineA+dotnow.y*LineB+LineC)<0.0001)
 									{
+									    if (dotnow.reality=="vitualreal")
+										{
+										    editor.createdot(dotnow.x,dotnow.y,0.5,"real","black");
+										}
 									    dotset.push(dotnow);
 									}
 								
