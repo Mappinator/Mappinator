@@ -1589,6 +1589,8 @@ var convex =
             var deltax2 = dotC.x - dotA.x;
             var deltay2 = dotC.y - dotA.y;
             var CosA = (deltax1 * deltax2 + deltay1 * deltay2)  / Math.sqrt(deltax1 * deltax1 + deltay1 * deltay1)  / Math.sqrt(deltax2 * deltax2 + deltay2 * deltay2);
+            if (CosA < -1) CosA=-1;
+            if (CosA > 1) CosA=1;
             var AngleA = Math.acos(CosA);
             if (deltax1 * deltay2 - deltax2 * deltay1 > 0) {
                 AngleSum += AngleA;
