@@ -3,7 +3,7 @@
 import System;
 
 
-public class Fold extends ScriptableObject
+public class Fold extends MonoBehaviour
 {
 	public var triangle:int[];
 	public var vertice:Vector3[];
@@ -136,7 +136,7 @@ public class Fold extends ScriptableObject
 	
 	function Start () {
 	
-	var PATH="godluo.CP";
+	var PATH="Android.cp";
 	//System.IO.File.Open(PATH,System.IO.FileMode.Open);
 	var MAP=System.IO.File.ReadAllText(PATH);
 	//var MAP="{'dots':[{'vector':[-2,2]},{'vector':[2,2]},{'vector':[-2,0]},{'vector':[0,0]},{'vector':[2,0]},{'vector':[-2,-2]},{'vector':[2,-2]}],'convex':[{'dots':[0,1,3]},{'dots':[0,2,3]},{'dots':[1,3,4]},{'dots':[2,3,5]},{'dots':[3,5,6]},{'dots':[3,4,6]}],'lines':[{'dots':[0,1],'convex':[-1,0],'type':'unfold'},{'dots':[2,0],'convex':[-1,1],'type':'unfold'},{'dots':[0,3],'convex':[0,1],'type':'mountain'},{'dots':[1,3],'convex':[2,0],'type':'mountain'},{'dots':[1,4],'convex':[-1,2],'type':'unfold'},{'dots':[3,2],'convex':[1,3],'type':'valley'},{'dots':[4,3],'convex':[2,5],'type':'valley'},{'dots':[2,5],'convex':[-1,3],'type':'unfold'},{'dots':[5,3],'convex':[3,4],'type':'mountain'},{'dots':[6,3],'convex':[4,5],'type':'mountain'},{'dots':[4,6],'convex':[-1,5],'type':'unfold'},{'dots':[5,6],'convex':[-1,4],'type':'unfold'}]}";
@@ -225,7 +225,7 @@ public class Fold extends ScriptableObject
 		LineHinge3.anchor=0.5*(Dot1+Dot2);
 		LineHinge3.axis=-Dot1+Dot2;
 		
-		LineHinge3.spring.spring=400000;
+		LineHinge3.spring.spring=200000;
 		LineHinge3.spring.damper=100;
 		LineHinge3.spring.targetPosition=180;
 		LineHinge3.limits.min=0;

@@ -1,1 +1,0 @@
-{"x":87.5,"y":28.125,"mode":"modify","scale":"","type":"editor","left":0,"right":100,"top":0,"bottom":100,"width":800,"height":800,"unitx":10,"unity":10,"lastx":-1,"lasty":-1,"dots":[],"lines":[],"selected":[],"convexs":[],"move":"not","outputstate":"sleeping","outputfilename":""}
