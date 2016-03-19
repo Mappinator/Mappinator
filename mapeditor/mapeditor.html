@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script lang="javascript" src="/FileSaver.js"></script>
+    <script lang="javascript" src="/snap.svg.js"></script>
+    <script lang="javascript" src="/mapeditor.js"></script>   
+  </head>
+  <body style="">
+    <script lang="javascript">
+	   var mapeditor=Object.create(editor);
+	   mapeditor.init(document.body);
+	  </script>
+    <div style="position: absolute; left: 1000px; margin-top: 20px; margin-left:100px; width:800px ">
+      <h2> Tips for use </h2>
+      <p> Drop a file to open it. </p>
+      <p> Press 'D' for 'draw' mode </p>
+      <br/>
+      <p> Press 'F' for 'fold' mode, click on the crease to change fold type. </p>
+      <br/>
+      <p> Press 'M' for 'modify(scale)' mode, type numbers or dot(.) to change scale rate, </p>
+      <p> click on the crease to scale, the rate is under SQRT. (Press 'C' to clear) </p>
+      <br/>
+      <p> Press 'A' for 'angle' mode, which is designed for accurate drawing, </p>
+      <p> click on some dot, then another one to measure the angle. The </p>
+      <p> accurate angle can be seen in the top-right corner (in degrees). </p>
+      <p> (Press 'Q' to add 90 d to it, Press 'H' to obtain half of it, </p>
+      <p> Press 'T' to obtain one-third of it, Press 'C' to clear) </p>
+      <p> When an angle is measured, in 'draw' mode you will be quite easy to </p>
+      <p> draw a crease parallel to it. Just click on a dot and you will get it. </p>
+      <br/>
+      <p> Press 'U' for 'unit' mode, for more convenient drawing. (It can be measured like angle) </p>
+      <p> It decides the 'unit' length on two directions, horizontal and vertical. </p>
+      <p> ('H' for half, 'T' for one-third, 'R' to reverse x and y, 'C' to recover) </p>
+      <br/>
+      <p> Press 'E' for 'erase' mode. </p>
+      <p> Press 'S' to save it. </p>
+      <p> Press 'P' to save it as a SVG picture. </p>
+      <p> Press 'O' to output it, with convexs decomposition. </p>
+      <br/>
+      <p> For more help, contact mappinator@gmail.com.
+    </div>
+  </body>
+</html>
